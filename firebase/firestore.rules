@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - store usernames and profiles
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      // Only the owner can write their own profile
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Usernames collection - for uniqueness checking
+    match /usernames/{username} {
+      // Anyone can read to check availability
+      allow read: if true;
+      // Only authenticated users can create, and only if they don't already have one
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && !exists(/databases/$(database)/documents/users/$(request.auth.uid));
+      // Only the owner can delete their username
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // Tokens collection - launched token data
+    match /tokens/{tokenAddress} {
+      // Anyone can read token data
+      allow read: if true;
+      // Only indexer can write (via admin SDK)
+      allow write: if false;
+    }
+
+    // Leaderboard collection - weekly burn rankings
+    match /leaderboards/{weekId} {
+      // Anyone can read leaderboard
+      allow read: if true;
+      // Only indexer can write
+      allow write: if false;
+
+      match /entries/{entryId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // Stats collection - global statistics
+    match /stats/{statId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

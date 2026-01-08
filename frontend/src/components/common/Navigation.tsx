@@ -4,143 +4,157 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useGlitchLevel } from '@/hooks/useGlitchLevel'
+import { useEffect, useState } from 'react'
 
 const NAV_ITEMS = [
-  { href: '/', label: 'HOME' },
-  { href: '/swap', label: 'SWAP' },
-  { href: '/liquidity', label: 'LIQUIDITY' },
-  { href: '/farm', label: 'FARM' },
-  { href: '/launchpad', label: 'LAUNCHPAD' },
-  { href: '/leaderboard', label: 'LEADERBOARD' },
+  { href: '/', label: 'HOME', key: 'H' },
+  { href: '/swap', label: 'SWAP', key: 'S' },
+  { href: '/liquidity', label: 'LIQ', key: 'L' },
+  { href: '/farm', label: 'FARM', key: 'F' },
+  { href: '/launchpad', label: 'LAUNCH', key: 'P' },
+  { href: '/leaderboard', label: 'RANKS', key: 'R' },
+  { href: '/roadmap', label: 'ROADMAP', key: 'M' },
 ]
 
 export function Navigation() {
   const pathname = usePathname()
-  const { madnessLevel, madnessName } = useGlitchLevel()
+  const { madnessLevel } = useGlitchLevel()
+  const [blockNumber, setBlockNumber] = useState('--------')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    // Simulate block number updates
+    const interval = setInterval(() => {
+      setBlockNumber(Math.floor(Math.random() * 90000000 + 10000000).toString())
+    }, 12000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
-    <nav className="border-b border-gray-800 bg-cthu-dark/80 backdrop-blur-sm sticky top-0 z-40">
+    <nav className="border-b border-gray-800 bg-black sticky top-0 z-40 font-mono">
+      {/* Top bar - System info */}
+      <div className="border-b border-gray-800 px-4 py-1 flex justify-between text-xs text-gray-600">
+        <div className="flex gap-4">
+          <span>CTHU-OS v0.6.6.6</span>
+          <span className="hidden sm:inline">|</span>
+          <span className="hidden sm:inline">MONAD MAINNET</span>
+        </div>
+        <div className="flex gap-4">
+          <span className="hidden sm:inline">BLOCK: {mounted ? blockNumber : '--------'}</span>
+          <span>|</span>
+          <span className={madnessLevel >= 3 ? 'animate-pulse text-white' : ''}>
+            MADNESS: [{madnessLevel}/5]
+          </span>
+        </div>
+      </div>
+
+      {/* Main nav */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-12">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-cthu-green font-bold text-xl group-hover:animate-glitch">
-              CTHUCOIN
-            </span>
-            <span className="text-gray-500 text-xs hidden sm:inline">
-              v0.6.6.6
+            <span className="text-white font-bold tracking-wider group-hover:text-gray-300">
+              ┌─ CTHU.EXE ─┐
             </span>
           </Link>
 
           {/* Nav Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
+          <div className="hidden md:flex items-center">
+            <span className="text-gray-600 mr-2">│</span>
+            {NAV_ITEMS.map((item, index) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 text-sm transition-colors ${
+                className={`px-3 py-1 text-sm transition-all ${
                   pathname === item.href
-                    ? 'text-cthu-green border-b-2 border-cthu-green'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-black bg-white'
+                    : 'text-gray-500 hover:text-white hover:bg-gray-900'
                 }`}
               >
-                {item.label}
+                [{item.key}] {item.label}
               </Link>
             ))}
+            <span className="text-gray-600 ml-2">│</span>
           </div>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-4">
-            {/* Madness Level */}
-            <div className="hidden sm:flex flex-col items-end text-xs">
-              <span className="text-gray-500">MADNESS</span>
-              <span className={`font-bold ${
-                madnessLevel >= 4 ? 'text-cthu-purple animate-pulse' :
-                madnessLevel >= 2 ? 'text-cthu-cyan' :
-                'text-cthu-green'
-              }`}>
-                LVL {madnessLevel} - {madnessName}
-              </span>
-            </div>
+          {/* Wallet Connect */}
+          <ConnectButton.Custom>
+            {({
+              account,
+              chain,
+              openAccountModal,
+              openChainModal,
+              openConnectModal,
+              mounted: walletMounted,
+            }) => {
+              const ready = walletMounted
+              const connected = ready && account && chain
 
-            {/* Wallet Connect */}
-            <ConnectButton.Custom>
-              {({
-                account,
-                chain,
-                openAccountModal,
-                openChainModal,
-                openConnectModal,
-                mounted,
-              }) => {
-                const ready = mounted
-                const connected = ready && account && chain
-
-                return (
-                  <div
-                    {...(!ready && {
-                      'aria-hidden': true,
-                      style: {
-                        opacity: 0,
-                        pointerEvents: 'none',
-                        userSelect: 'none',
-                      },
-                    })}
-                  >
-                    {(() => {
-                      if (!connected) {
-                        return (
-                          <button
-                            onClick={openConnectModal}
-                            className="terminal-button text-sm"
-                          >
-                            CONNECT
-                          </button>
-                        )
-                      }
-
-                      if (chain.unsupported) {
-                        return (
-                          <button
-                            onClick={openChainModal}
-                            className="terminal-button text-sm border-red-500 text-red-500"
-                          >
-                            WRONG NETWORK
-                          </button>
-                        )
-                      }
-
+              return (
+                <div
+                  {...(!ready && {
+                    'aria-hidden': true,
+                    style: {
+                      opacity: 0,
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    },
+                  })}
+                >
+                  {(() => {
+                    if (!connected) {
                       return (
                         <button
-                          onClick={openAccountModal}
-                          className="terminal-button text-sm"
+                          onClick={openConnectModal}
+                          className="text-sm border border-gray-600 px-3 py-1 text-gray-400 hover:text-white hover:border-white transition-all"
                         >
-                          {account.displayName}
+                          ┌ CONNECT ┐
                         </button>
                       )
-                    })()}
-                  </div>
-                )
-              }}
-            </ConnectButton.Custom>
-          </div>
+                    }
+
+                    if (chain.unsupported) {
+                      return (
+                        <button
+                          onClick={openChainModal}
+                          className="text-sm border border-white px-3 py-1 text-white animate-pulse"
+                        >
+                          !! WRONG CHAIN !!
+                        </button>
+                      )
+                    }
+
+                    return (
+                      <button
+                        onClick={openAccountModal}
+                        className="text-sm border border-gray-600 px-3 py-1 text-gray-400 hover:text-white hover:border-white transition-all"
+                      >
+                        └ {account.displayName} ┘
+                      </button>
+                    )
+                  })()}
+                </div>
+              )
+            }}
+          </ConnectButton.Custom>
         </div>
       </div>
 
       {/* Mobile Nav */}
       <div className="md:hidden border-t border-gray-800 overflow-x-auto">
-        <div className="flex px-2 py-2 gap-1">
+        <div className="flex px-2 py-1">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={`px-3 py-1 text-xs whitespace-nowrap ${
                 pathname === item.href
-                  ? 'text-cthu-green bg-cthu-green/10'
-                  : 'text-gray-400'
+                  ? 'text-black bg-white'
+                  : 'text-gray-500'
               }`}
             >
-              {item.label}
+              [{item.key}]
             </Link>
           ))}
         </div>

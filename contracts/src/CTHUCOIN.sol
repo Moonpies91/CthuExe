@@ -6,22 +6,22 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
- * @title CTHUCOIN
- * @notice The native token of the CthuCoin ecosystem
+ * @title cthu.nad
+ * @notice The native token of the CthuCoin ecosystem on Monad
  * @dev ERC-20 token with 1B supply, vesting for dev allocation, and burn mechanics
  *
  * Distribution:
- * - 15,000,000 (1.5%) to deployer for initial liquidity
- * - 100,000,000 (10%) to dev wallet with 12-month linear vesting
+ * - 65,000,000 (6.5%) to deployer for initial liquidity
+ * - 50,000,000 (5%) to dev wallet with 12-month linear vesting
  * - 885,000,000 (88.5%) to farming contract for rewards
  */
 contract CTHUCOIN is ERC20, ERC20Burnable, ReentrancyGuard {
     // ============ Constants ============
 
     uint256 public constant TOTAL_SUPPLY = 1_000_000_000 * 10**18; // 1 billion
-    uint256 public constant INITIAL_LIQUIDITY = 15_000_000 * 10**18; // 15 million
-    uint256 public constant DEV_ALLOCATION = 100_000_000 * 10**18; // 100 million
-    uint256 public constant FARM_ALLOCATION = 885_000_000 * 10**18; // 885 million
+    uint256 public constant INITIAL_LIQUIDITY = 65_000_000 * 10**18; // 65 million (6.5%)
+    uint256 public constant DEV_ALLOCATION = 50_000_000 * 10**18; // 50 million (5%)
+    uint256 public constant FARM_ALLOCATION = 885_000_000 * 10**18; // 885 million (88.5%)
 
     uint256 public constant VESTING_DURATION = 365 days; // 12 months
 
@@ -50,7 +50,7 @@ contract CTHUCOIN is ERC20, ERC20Burnable, ReentrancyGuard {
     constructor(
         address _devWallet,
         address _farmContract
-    ) ERC20("CthuCoin", "CTHU") {
+    ) ERC20("cthu.nad", "CTHU") {
         require(_devWallet != address(0), "CTHU: Invalid dev wallet");
         require(_farmContract != address(0), "CTHU: Invalid farm contract");
 

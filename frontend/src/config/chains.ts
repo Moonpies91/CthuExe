@@ -23,23 +23,23 @@ export const monadTestnet = defineChain({
 })
 
 export const monadMainnet = defineChain({
-  id: 10142,
+  id: 143,
   name: 'Monad',
   nativeCurrency: {
     decimals: 18,
     name: 'MONAD',
-    symbol: 'MONAD',
+    symbol: 'MON',
   },
   rpcUrls: {
     default: {
-      http: ['https://mainnet-rpc.monad.xyz'],
+      http: ['https://rpc.monad.xyz'],
     },
     public: {
-      http: ['https://mainnet-rpc.monad.xyz'],
+      http: ['https://rpc.monad.xyz'],
     },
   },
   blockExplorers: {
-    default: { name: 'Monad Explorer', url: 'https://explorer.monad.xyz' },
+    default: { name: 'MonadScan', url: 'https://monadexplorer.com' },
   },
   testnet: false,
 })

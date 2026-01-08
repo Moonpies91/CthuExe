@@ -229,8 +229,9 @@ contract CthuSwapTest is Test {
         uint256[] memory amounts = router.getAmountsOut(1 ether, path);
 
         assertTrue(amounts[1] > 0);
-        // With 100k CTHU : 10 MONAD, 1 MONAD should get ~9970 CTHU (after 0.3% fee)
-        assertApproxEqRel(amounts[1], 9970 * 10**18, 0.01e18);
+        // With 100k CTHU : 10 MONAD, 1 MONAD should get ~9066 CTHU (after 0.3% fee)
+        // Formula: (1 * 997 * 100000) / (10 * 1000 + 1 * 997) = 99700000 / 10997 = ~9066
+        assertApproxEqRel(amounts[1], 9066 * 10**18, 0.01e18);
     }
 
     // ============ Helper Functions ============

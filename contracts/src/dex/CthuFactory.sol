@@ -23,8 +23,6 @@ contract CthuFactory is ICthuFactory {
     mapping(address => mapping(address => address)) public getPair;
     address[] public allPairs;
 
-    event PairCreated(address indexed token0, address indexed token1, address pair, uint256);
-
     /**
      * @notice Deploy the factory with immutable fee configuration
      * @param _feeTo Address to receive protocol fees

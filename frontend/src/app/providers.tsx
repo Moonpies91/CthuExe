@@ -5,6 +5,8 @@ import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit'
 import { useState, type ReactNode } from 'react'
 import { config } from '@/config/wagmi'
+import { CRTWrapper } from '@/components/terminal/CRTWrapper'
+import { PageTransition } from '@/components/terminal/PageTransition'
 
 import '@rainbow-me/rainbowkit/styles.css'
 
@@ -16,14 +18,18 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={darkTheme({
-            accentColor: '#00ff00',
+            accentColor: '#FFFFFF',
             accentColorForeground: '#000000',
             borderRadius: 'none',
             fontStack: 'system',
           })}
           modalSize="compact"
         >
-          {children}
+          <CRTWrapper>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </CRTWrapper>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "chat": {
+      ".read": true,
+      ".write": "auth != null",
+      "$messageId": {
+        ".validate": "newData.hasChildren(['text', 'userId', 'username', 'timestamp']) && newData.child('text').isString() && newData.child('text').val().length <= 280 && newData.child('text').val().matches(/^[\\x20-\\x7E]*$/)"
+      }
+    },
+    "rateLimit": {
+      "$userId": {
+        ".read": "auth != null && auth.uid == $userId",
+        ".write": "auth != null && auth.uid == $userId"
+      }
+    }
+  }
+}

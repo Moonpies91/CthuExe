@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "../interfaces/ICthuFactory.sol";
 import "../interfaces/ICthuPair.sol";
-import "../interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IWMONAD.sol";
 import "../libraries/CthuLibrary.sol";
 import "../libraries/TransferHelper.sol";

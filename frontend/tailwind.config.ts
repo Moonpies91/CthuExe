@@ -11,10 +11,8 @@ const config: Config = {
       colors: {
         'cthu-black': '#000000',
         'cthu-dark': '#0a0a0a',
-        'cthu-green': '#00ff00',
-        'cthu-red': '#ff0000',
-        'cthu-cyan': '#00ffff',
-        'cthu-purple': '#8b00ff',
+        // Strict monochrome - only black and white
+        // RGB colors only used for glitch effects
       },
       fontFamily: {
         mono: ['IBM Plex Mono', 'JetBrains Mono', 'Courier New', 'monospace'],
@@ -48,7 +46,7 @@ const config: Config = {
         },
         blink: {
           '0%, 100%': { borderColor: 'transparent' },
-          '50%': { borderColor: '#00ff00' },
+          '50%': { borderColor: '#FFFFFF' },
         },
       },
     },

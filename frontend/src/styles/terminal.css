@@ -29,6 +29,13 @@
 /* CRT Screen Effect */
 .crt-effect {
   position: relative;
+  animation: crt-flicker 0.3s infinite;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.99; }
+  50% { opacity: 1; }
+  100% { opacity: 0.99; }
 }
 
 .crt-effect::before {
@@ -41,11 +48,52 @@
   background: radial-gradient(
     ellipse at center,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.2) 80%,
-    rgba(0, 0, 0, 0.4) 100%
+    rgba(0, 0, 0, 0.1) 70%,
+    rgba(0, 0, 0, 0.3) 100%
   );
   pointer-events: none;
   z-index: 99;
+}
+
+/* Phosphor glow on text - subtle for readability */
+.crt-effect * {
+  text-shadow:
+    0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Headings get slight glow */
+.crt-effect h1,
+.crt-effect h2,
+.crt-effect .font-bold {
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.5),
+    0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* Chromatic aberration ONLY on decorative elements */
+.crt-effect .glitch,
+.crt-effect .chromatic {
+  text-shadow:
+    -4px 0 rgba(255, 0, 0, 0.6),
+    4px 0 rgba(0, 255, 255, 0.6),
+    0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Strong aberration on ASCII art */
+.crt-effect pre {
+  text-shadow:
+    -3px 0 rgba(255, 0, 0, 0.5),
+    3px 0 rgba(0, 255, 255, 0.5),
+    0 0 5px rgba(255, 255, 255, 0.6);
+}
+
+/* Flavor text gets chromatic effect */
+.crt-effect .flavor-text {
+  text-shadow:
+    -2px 0 rgba(255, 0, 0, 0.4),
+    2px 0 rgba(0, 255, 255, 0.4),
+    0 0 3px rgba(255, 255, 255, 0.4);
 }
 
 /* Chromatic Aberration */
@@ -194,13 +242,10 @@
   animation: flicker 5s infinite;
 }
 
-/* Terminal Text Colors */
-.text-terminal-green { color: #00ff00; }
-.text-terminal-red { color: #ff0000; }
-.text-terminal-cyan { color: #00ffff; }
-.text-terminal-purple { color: #8b00ff; }
-.text-terminal-yellow { color: #ffff00; }
+/* Terminal Text Colors - Strict Monochrome */
 .text-terminal-white { color: #ffffff; }
+.text-terminal-dim { color: #888888; }
+.text-terminal-dark { color: #444444; }
 
 /* Cursor Blink */
 .cursor-blink::after {
@@ -213,11 +258,11 @@
   51%, 100% { opacity: 0; }
 }
 
-/* Terminal Button */
+/* Terminal Button - Monochrome */
 .terminal-button {
   background-color: transparent;
-  border: 1px solid #00ff00;
-  color: #00ff00;
+  border: 1px solid #FFFFFF;
+  color: #FFFFFF;
   padding: 8px 16px;
   font-family: inherit;
   cursor: pointer;
@@ -225,21 +270,21 @@
 }
 
 .terminal-button:hover {
-  background-color: #00ff00;
+  background-color: #FFFFFF;
   color: #000000;
 }
 
 .terminal-button:disabled {
-  border-color: #333;
-  color: #333;
+  border-color: #444;
+  color: #444;
   cursor: not-allowed;
 }
 
-/* Terminal Input */
+/* Terminal Input - Monochrome */
 .terminal-input {
   background-color: #0a0a0a;
-  border: 1px solid #333;
-  color: #00ff00;
+  border: 1px solid #444;
+  color: #FFFFFF;
   padding: 8px 12px;
   font-family: inherit;
   width: 100%;
@@ -247,18 +292,18 @@
 
 .terminal-input:focus {
   outline: none;
-  border-color: #00ff00;
+  border-color: #FFFFFF;
 }
 
-/* Terminal Card */
+/* Terminal Card - Monochrome */
 .terminal-card {
   background-color: #0a0a0a;
-  border: 1px solid #333;
+  border: 1px solid #444;
   padding: 16px;
 }
 
 .terminal-card:hover {
-  border-color: #00ff00;
+  border-color: #FFFFFF;
 }
 
 /* Madness Level Styles */
@@ -272,7 +317,7 @@
 /* Typing Animation */
 .typing-text {
   overflow: hidden;
-  border-right: 2px solid #00ff00;
+  border-right: 2px solid #FFFFFF;
   white-space: nowrap;
   animation:
     typing 3.5s steps(40, end),
@@ -286,7 +331,7 @@
 
 @keyframes blink-caret {
   from, to { border-color: transparent; }
-  50% { border-color: #00ff00; }
+  50% { border-color: #FFFFFF; }
 }
 
 /* Screen Shake */

@@ -19,7 +19,7 @@ contract CTHUCOINTest is Test {
     // ============ Deployment Tests ============
 
     function test_Deployment() public view {
-        assertEq(cthu.name(), "CthuCoin");
+        assertEq(cthu.name(), "cthu.nad");
         assertEq(cthu.symbol(), "CTHU");
         assertEq(cthu.decimals(), 18);
         assertEq(cthu.totalSupply(), cthu.TOTAL_SUPPLY());

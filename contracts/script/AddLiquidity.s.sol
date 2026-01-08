@@ -78,20 +78,18 @@ contract AddLiquidityScript is Script {
         address pair = factory.getPair(address(cthu), wmonadAddress);
         console.log("Pair address:", pair);
 
-        // Burn LP tokens
+        // Keep LP tokens in deployer wallet (not burning)
         ICthuPair lpToken = ICthuPair(pair);
         uint256 lpBalance = lpToken.balanceOf(deployer);
-        console.log("LP balance to burn:", lpBalance / 1e18);
-
-        lpToken.transfer(BURN_ADDRESS, lpBalance);
-        console.log("LP tokens burned to:", BURN_ADDRESS);
+        console.log("LP tokens received:", lpBalance / 1e18);
+        console.log("LP tokens kept in wallet:", deployer);
 
         vm.stopBroadcast();
 
         // Verify
         console.log("\n=== LIQUIDITY ADDED ===");
         console.log("Pair:", pair);
-        console.log("LP tokens burned:", lpBalance / 1e18);
+        console.log("LP tokens in your wallet:", lpBalance / 1e18);
 
         // Calculate initial price
         uint256 pricePerCthu = (amountMONAD * 1e18) / amountToken;

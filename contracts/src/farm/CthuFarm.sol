@@ -10,11 +10,15 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @notice Yield farming contract for CthuCoin ecosystem
  * @dev MasterChef-style farming with immutable pool weights and 4-year emission schedule
  *
- * Pool Configuration (immutable):
- * - Pool 0: CTHU/MONAD LP - 50% weight
- * - Pool 1: CTHU/USDT LP - 25% weight
- * - Pool 2: MONAD/USDT LP - 15% weight
- * - Pool 3: Graduated token pools - 10% weight
+ * IMPORTANT SAFEGUARDS:
+ * - startTime is configurable until finalized
+ * - Pools MUST be added before finalizing
+ * - Emergency token recovery available before farming starts
+ *
+ * Pool Configuration (immutable after finalization):
+ * - Pool 0: CTHU/MONAD LP - 55% weight
+ * - Pool 1: CTHU/USDT LP - 28% weight
+ * - Pool 2: MONAD/USDT LP - 17% weight
  *
  * Emission Schedule:
  * - Year 1: 400,000,000 CTHU (12.68 per second)
@@ -46,10 +50,9 @@ contract CthuFarm is ReentrancyGuard {
     uint256 public constant TOTAL_ALLOC_POINTS = 10000; // 100% = 10000 basis points
 
     // Pool allocation points (immutable)
-    uint256 public constant POOL_CTHU_MONAD_ALLOC = 5000;  // 50%
-    uint256 public constant POOL_CTHU_USDT_ALLOC = 2500;   // 25%
-    uint256 public constant POOL_MONAD_USDT_ALLOC = 1500;  // 15%
-    uint256 public constant POOL_GRADUATED_ALLOC = 1000;   // 10%
+    uint256 public constant POOL_CTHU_MONAD_ALLOC = 5500;  // 55%
+    uint256 public constant POOL_CTHU_USDT_ALLOC = 2800;   // 28%
+    uint256 public constant POOL_MONAD_USDT_ALLOC = 1700;  // 17%
 
     // Emission schedule (per second)
     uint256 public constant YEAR_1_EMISSION = 12680000000000000000; // ~12.68 CTHU/sec
@@ -62,8 +65,14 @@ contract CthuFarm is ReentrancyGuard {
     // ============ State Variables ============
 
     IERC20 public immutable cthu;
-    uint256 public immutable startTime;
-    uint256 public immutable endTime;
+
+    // Owner for admin functions
+    address public owner;
+
+    // Start/end times - configurable until finalized
+    uint256 public startTime;
+    uint256 public endTime;
+    bool public startTimeFinalized;
 
     PoolInfo[] public poolInfo;
     mapping(uint256 => mapping(address => UserInfo)) public userInfo;
@@ -75,32 +84,111 @@ contract CthuFarm is ReentrancyGuard {
     event Harvest(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event PoolAdded(uint256 indexed pid, address lpToken, uint256 allocPoint);
+    event StartTimeSet(uint256 startTime, uint256 endTime);
+    event StartTimeFinalized(uint256 startTime, uint256 poolCount);
+    event EmergencyTokenRecovery(address indexed token, uint256 amount);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    // ============ Modifiers ============
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "CthuFarm: Not owner");
+        _;
+    }
 
     // ============ Constructor ============
 
     /**
      * @notice Deploy the farming contract
      * @param _cthu CTHU token address
-     * @param _startTime Timestamp when farming begins
+     * @dev startTime must be set separately via setStartTime() before finalization
      */
-    constructor(address _cthu, uint256 _startTime) {
+    constructor(address _cthu) {
         require(_cthu != address(0), "CthuFarm: Invalid CTHU");
-        require(_startTime >= block.timestamp, "CthuFarm: Invalid start time");
 
         cthu = IERC20(_cthu);
+        owner = msg.sender;
+
+        // Initialize with placeholder times - must be set before finalization
+        startTime = 0;
+        endTime = 0;
+        startTimeFinalized = false;
+    }
+
+    // ============ Owner Management ============
+
+    /**
+     * @notice Transfer ownership to a new address
+     * @param _newOwner New owner address
+     */
+    function transferOwnership(address _newOwner) external onlyOwner {
+        require(_newOwner != address(0), "CthuFarm: Invalid new owner");
+        emit OwnershipTransferred(owner, _newOwner);
+        owner = _newOwner;
+    }
+
+    // ============ Start Time Management ============
+
+    /**
+     * @notice Set the farming start time (can only be called before finalization)
+     * @param _startTime Timestamp when farming should begin
+     */
+    function setStartTime(uint256 _startTime) external onlyOwner {
+        require(!startTimeFinalized, "CthuFarm: Start time already finalized");
+        require(_startTime > block.timestamp, "CthuFarm: Must be in the future");
+
         startTime = _startTime;
         endTime = _startTime + (4 * YEAR_DURATION);
+
+        emit StartTimeSet(_startTime, endTime);
+    }
+
+    /**
+     * @notice Finalize the start time - locks pools and schedule permanently
+     * @dev CRITICAL: Requires at least 1 pool to be configured
+     */
+    function finalizeStartTime() external onlyOwner {
+        require(!startTimeFinalized, "CthuFarm: Already finalized");
+        require(startTime > 0, "CthuFarm: Start time not set");
+        require(startTime > block.timestamp, "CthuFarm: Start time must be in future");
+        require(poolInfo.length > 0, "CthuFarm: No pools configured");
+
+        startTimeFinalized = true;
+
+        // Update all pools to use the finalized start time
+        for (uint256 i = 0; i < poolInfo.length; i++) {
+            poolInfo[i].lastRewardTime = startTime;
+        }
+
+        emit StartTimeFinalized(startTime, poolInfo.length);
+    }
+
+    // ============ Emergency Functions ============
+
+    /**
+     * @notice Emergency token recovery - can only be used before farming starts or if no pools exist
+     * @param _token Token address to recover
+     * @param _amount Amount to recover
+     */
+    function emergencyRecoverTokens(address _token, uint256 _amount) external onlyOwner {
+        require(
+            !startTimeFinalized || block.timestamp < startTime || poolInfo.length == 0,
+            "CthuFarm: Cannot recover during active farming"
+        );
+
+        IERC20(_token).safeTransfer(owner, _amount);
+        emit EmergencyTokenRecovery(_token, _amount);
     }
 
     // ============ Pool Management ============
 
     /**
-     * @notice Add a new LP pool (can only be called before farming starts)
+     * @notice Add a new LP pool (can only be called before finalization)
      * @param _lpToken LP token address
      * @param _allocPoint Allocation points for this pool
      */
-    function addPool(address _lpToken, uint256 _allocPoint) external {
-        require(block.timestamp < startTime, "CthuFarm: Farming started");
+    function addPool(address _lpToken, uint256 _allocPoint) external onlyOwner {
+        require(!startTimeFinalized, "CthuFarm: Cannot add pools after finalization");
         require(_lpToken != address(0), "CthuFarm: Invalid LP token");
 
         // Verify total alloc points won't exceed limit
@@ -110,10 +198,11 @@ contract CthuFarm is ReentrancyGuard {
         }
         require(currentTotal + _allocPoint <= TOTAL_ALLOC_POINTS, "CthuFarm: Exceeds alloc limit");
 
+        // Use placeholder lastRewardTime - will be updated on finalization
         poolInfo.push(PoolInfo({
             lpToken: IERC20(_lpToken),
             allocPoint: _allocPoint,
-            lastRewardTime: startTime,
+            lastRewardTime: startTime > 0 ? startTime : block.timestamp,
             accCthuPerShare: 0,
             totalDeposited: 0
         }));
@@ -135,6 +224,7 @@ contract CthuFarm is ReentrancyGuard {
      * @return rate CTHU per second
      */
     function getEmissionRate() public view returns (uint256 rate) {
+        if (!startTimeFinalized) return 0;
         if (block.timestamp < startTime) return 0;
         if (block.timestamp >= endTime) return 0;
 
@@ -158,13 +248,15 @@ contract CthuFarm is ReentrancyGuard {
      * @return pending CTHU rewards
      */
     function pendingReward(uint256 _pid, address _user) external view returns (uint256 pending) {
+        if (_pid >= poolInfo.length) return 0;
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
 
         uint256 accCthuPerShare = pool.accCthuPerShare;
         uint256 lpSupply = pool.totalDeposited;
 
-        if (block.timestamp > pool.lastRewardTime && lpSupply != 0) {
+        if (block.timestamp > pool.lastRewardTime && lpSupply != 0 && startTimeFinalized) {
             uint256 cthuReward = _calculateReward(pool.lastRewardTime, block.timestamp, pool.allocPoint);
             accCthuPerShare += (cthuReward * 1e12) / lpSupply;
         }
@@ -176,6 +268,7 @@ contract CthuFarm is ReentrancyGuard {
      * @notice Calculate rewards for a time period
      */
     function _calculateReward(uint256 _from, uint256 _to, uint256 _allocPoint) internal view returns (uint256) {
+        if (!startTimeFinalized) return 0;
         if (_from >= endTime) return 0;
         if (_to > endTime) _to = endTime;
         if (_from < startTime) _from = startTime;
@@ -218,6 +311,8 @@ contract CthuFarm is ReentrancyGuard {
      * @param _pid Pool ID
      */
     function updatePool(uint256 _pid) public {
+        require(startTimeFinalized, "CthuFarm: Not finalized");
+
         PoolInfo storage pool = poolInfo[_pid];
 
         if (block.timestamp <= pool.lastRewardTime) return;
@@ -250,6 +345,9 @@ contract CthuFarm is ReentrancyGuard {
      * @param _amount Amount of LP tokens to deposit
      */
     function deposit(uint256 _pid, uint256 _amount) external nonReentrant {
+        require(startTimeFinalized, "CthuFarm: Not finalized");
+        require(_pid < poolInfo.length, "CthuFarm: Invalid pool");
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -280,6 +378,9 @@ contract CthuFarm is ReentrancyGuard {
      * @param _amount Amount of LP tokens to withdraw
      */
     function withdraw(uint256 _pid, uint256 _amount) external nonReentrant {
+        require(startTimeFinalized, "CthuFarm: Not finalized");
+        require(_pid < poolInfo.length, "CthuFarm: Invalid pool");
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -309,6 +410,9 @@ contract CthuFarm is ReentrancyGuard {
      * @param _pid Pool ID
      */
     function harvest(uint256 _pid) external nonReentrant {
+        require(startTimeFinalized, "CthuFarm: Not finalized");
+        require(_pid < poolInfo.length, "CthuFarm: Invalid pool");
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -328,6 +432,8 @@ contract CthuFarm is ReentrancyGuard {
      * @param _pid Pool ID
      */
     function emergencyWithdraw(uint256 _pid) external nonReentrant {
+        require(_pid < poolInfo.length, "CthuFarm: Invalid pool");
+
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -385,8 +491,27 @@ contract CthuFarm is ReentrancyGuard {
     ) {
         currentEmission = getEmissionRate();
         totalPools = poolInfo.length;
-        farmingActive = block.timestamp >= startTime && block.timestamp < endTime;
-        timeToStart = block.timestamp < startTime ? startTime - block.timestamp : 0;
-        timeToEnd = block.timestamp < endTime ? endTime - block.timestamp : 0;
+        farmingActive = startTimeFinalized && block.timestamp >= startTime && block.timestamp < endTime;
+        timeToStart = startTimeFinalized && block.timestamp < startTime ? startTime - block.timestamp : 0;
+        timeToEnd = startTimeFinalized && block.timestamp < endTime ? endTime - block.timestamp : 0;
+    }
+
+    /**
+     * @notice Check if the farm is properly configured and ready to finalize
+     * @return isReady Whether the farm can be finalized
+     * @return poolCount Number of pools configured
+     * @return startTimeSet Whether start time has been set
+     * @return isFinalized Whether already finalized
+     */
+    function getConfigurationStatus() external view returns (
+        bool isReady,
+        uint256 poolCount,
+        bool startTimeSet,
+        bool isFinalized
+    ) {
+        poolCount = poolInfo.length;
+        startTimeSet = startTime > 0;
+        isFinalized = startTimeFinalized;
+        isReady = poolCount > 0 && startTimeSet && startTime > block.timestamp && !isFinalized;
     }
 }
