@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
-  // output: 'export', // Uncomment for static HTML export (GitHub Pages)
+  output: 'export', // Static HTML export for GitHub Pages
+  basePath: '/CthuExe', // Your repo name
+  assetPrefix: '/CthuExe/',
   images: {
     unoptimized: true,
   },
