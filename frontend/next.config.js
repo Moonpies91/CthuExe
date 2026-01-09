@@ -3,8 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
   output: 'export', // Static HTML export for GitHub Pages
-  basePath: '/CthuExe', // Your repo name
-  assetPrefix: '/CthuExe/',
+  // No basePath needed with custom domain
   images: {
     unoptimized: true,
   },
