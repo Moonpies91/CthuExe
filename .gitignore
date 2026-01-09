@@ -51,6 +51,16 @@ contracts/broadcast/
 # Private documentation - NEVER COMMIT
 cthu.all
 CthuCoin_Dev_Specification.txt
+CthuCoin_Dev_Specification.docx
+CthuCoin_Aesthetic_Specification.docx
+IMPLEMENTATION_PLAN.md
 SECRETS_BACKUP.txt
 *PRIVATE*
 *BACKUP*
+
+# Apple Pages files
+*.pages
+QnA_extracted/
+
+# Word documents (internal docs)
+*.docx
