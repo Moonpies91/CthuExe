@@ -1,13 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function DisclaimerBanner() {
   const [expanded, setExpanded] = useState(false)
+  const [dismissed, setDismissed] = useState(true) // Start hidden to prevent flash
+
+  useEffect(() => {
+    const isDismissed = sessionStorage.getItem('disclaimer-dismissed')
+    setDismissed(isDismissed === 'true')
+  }, [])
+
+  const handleDismiss = () => {
+    setDismissed(true)
+    sessionStorage.setItem('disclaimer-dismissed', 'true')
+  }
+
+  if (dismissed) return null
 
   return (
-    <div className="bg-red-950/95 border-b border-red-800">
-      <div className="max-w-6xl mx-auto px-4 py-3">
+    <div className="bg-red-950/95 border-b border-red-800 relative">
+      <div className="max-w-6xl mx-auto px-4 py-3 pr-12">
         <div className="flex items-start gap-3">
           <span className="text-red-500 font-mono animate-pulse mt-0.5">
             [!]
@@ -58,6 +71,15 @@ export function DisclaimerBanner() {
             </div>
           </div>
         </div>
+
+        {/* Close button */}
+        <button
+          onClick={handleDismiss}
+          className="absolute top-3 right-4 text-red-500 hover:text-red-300 font-mono text-sm px-2 py-1 border border-red-800 hover:border-red-600 transition-colors"
+          aria-label="Dismiss warning"
+        >
+          [X]
+        </button>
       </div>
     </div>
   )
