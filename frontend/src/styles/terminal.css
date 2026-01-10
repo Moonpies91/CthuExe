@@ -55,23 +55,41 @@
   z-index: 99;
 }
 
-/* Phosphor glow on text - subtle for readability */
+/* Phosphor glow on text - with subtle chromatic aberration */
 .crt-effect * {
   text-shadow:
-    0 0 1px rgba(255, 255, 255, 0.3),
-    0 0 2px rgba(255, 255, 255, 0.1);
+    -0.5px 0 rgba(255, 0, 0, 0.15),
+    0.5px 0 rgba(0, 255, 255, 0.15),
+    0 0 1px rgba(255, 255, 255, 0.3);
 }
 
-/* Headings get slight glow */
+/* Headings get chromatic glow */
 .crt-effect h1,
 .crt-effect h2,
 .crt-effect .font-bold {
   text-shadow:
-    0 0 2px rgba(255, 255, 255, 0.5),
-    0 0 5px rgba(255, 255, 255, 0.2);
+    -1px 0 rgba(255, 0, 0, 0.3),
+    1px 0 rgba(0, 255, 255, 0.3),
+    0 0 3px rgba(255, 255, 255, 0.4);
 }
 
-/* Chromatic aberration ONLY on decorative elements */
+/* Links get chromatic effect on hover */
+.crt-effect a:hover {
+  text-shadow:
+    -2px 0 rgba(255, 0, 0, 0.5),
+    2px 0 rgba(0, 255, 255, 0.5),
+    0 0 8px currentColor;
+}
+
+/* Buttons get chromatic aberration */
+.crt-effect button:not(:disabled):hover {
+  text-shadow:
+    -2px 0 rgba(255, 0, 0, 0.4),
+    2px 0 rgba(0, 255, 255, 0.4),
+    0 0 5px currentColor;
+}
+
+/* Chromatic aberration on decorative elements */
 .crt-effect .glitch,
 .crt-effect .chromatic {
   text-shadow:
@@ -94,6 +112,51 @@
     -2px 0 rgba(255, 0, 0, 0.4),
     2px 0 rgba(0, 255, 255, 0.4),
     0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Animated chromatic pulse - apply with .chromatic-pulse class */
+@keyframes chromatic-pulse {
+  0%, 100% {
+    text-shadow:
+      -2px 0 rgba(255, 0, 0, 0.4),
+      2px 0 rgba(0, 255, 255, 0.4),
+      0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    text-shadow:
+      -4px 0 rgba(255, 0, 0, 0.6),
+      4px 0 rgba(0, 255, 255, 0.6),
+      0 0 10px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.chromatic-pulse {
+  animation: chromatic-pulse 3s ease-in-out infinite;
+}
+
+/* Strong chromatic class for key elements */
+.chromatic-strong {
+  text-shadow:
+    -3px 0 rgba(255, 0, 0, 0.5),
+    3px 0 rgba(0, 255, 255, 0.5),
+    0 0 8px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Border chromatic glow */
+.chromatic-border {
+  box-shadow:
+    -2px 0 rgba(255, 0, 0, 0.3),
+    2px 0 rgba(0, 255, 255, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Chromatic aberration on inputs when focused */
+.crt-effect input:focus,
+.crt-effect select:focus {
+  box-shadow:
+    -2px 0 rgba(255, 0, 0, 0.3),
+    2px 0 rgba(0, 255, 255, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 /* Chromatic Aberration */
