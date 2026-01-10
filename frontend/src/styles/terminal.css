@@ -55,11 +55,11 @@
   z-index: 99;
 }
 
-/* Phosphor glow on text - with subtle chromatic aberration */
+/* Phosphor glow on text - minimal chromatic aberration */
 .crt-effect * {
   text-shadow:
-    -0.5px 0 rgba(255, 0, 0, 0.08),
-    0.5px 0 rgba(0, 255, 255, 0.08),
+    -0.5px 0 rgba(255, 0, 0, 0.04),
+    0.5px 0 rgba(0, 255, 255, 0.04),
     0 0 1px rgba(255, 255, 255, 0.3);
 }
 
@@ -68,24 +68,24 @@
 .crt-effect h2,
 .crt-effect .font-bold {
   text-shadow:
-    -1px 0 rgba(255, 0, 0, 0.15),
-    1px 0 rgba(0, 255, 255, 0.15),
+    -1px 0 rgba(255, 0, 0, 0.08),
+    1px 0 rgba(0, 255, 255, 0.08),
     0 0 3px rgba(255, 255, 255, 0.4);
 }
 
 /* Links get chromatic effect on hover */
 .crt-effect a:hover {
   text-shadow:
-    -2px 0 rgba(255, 0, 0, 0.25),
-    2px 0 rgba(0, 255, 255, 0.25),
+    -2px 0 rgba(255, 0, 0, 0.12),
+    2px 0 rgba(0, 255, 255, 0.12),
     0 0 8px currentColor;
 }
 
 /* Buttons get chromatic aberration */
 .crt-effect button:not(:disabled):hover {
   text-shadow:
-    -2px 0 rgba(255, 0, 0, 0.2),
-    2px 0 rgba(0, 255, 255, 0.2),
+    -2px 0 rgba(255, 0, 0, 0.1),
+    2px 0 rgba(0, 255, 255, 0.1),
     0 0 5px currentColor;
 }
 
