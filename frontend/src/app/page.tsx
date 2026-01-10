@@ -981,14 +981,37 @@ export default function HomePage() {
               {/* Stats - fade in after menu */}
               {animationPhase >= 11 && (
                 <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <div className="text-gray-700 text-xs mb-2">{'-'.repeat(50)}</div>
-                  <div className="mb-2 text-xs space-y-0">
-                    <TypeLine delay={0} speed={18} glitchIntensity={0.04} className="text-gray-600" showCursor={false}>
-                      {`TVL: ${tvlDisplay} | BURNED: ${burnedAmount} | SUPPLY: 1B CTHU`}
-                    </TypeLine>
-                    <TypeLine delay={400} speed={18} glitchIntensity={0.04} className="text-gray-600" showCursor={false}>
-                      FARM ALLOCATION: 885M CTHU (4 years)
-                    </TypeLine>
+                  <div className="text-gray-700 text-xs mb-3">{'-'.repeat(50)}</div>
+                  <div className="mb-3 p-3 border border-emerald-900/50 bg-emerald-950/20 relative overflow-hidden">
+                    {/* Scanline effect */}
+                    <div className="absolute inset-0 pointer-events-none opacity-10">
+                      <div className="h-full w-full" style={{
+                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px)'
+                      }} />
+                    </div>
+
+                    {/* Stats content */}
+                    <div className="space-y-2 relative z-10">
+                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm font-mono">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">TVL:</span>
+                          <span className="text-emerald-400 font-bold animate-pulse">{tvlDisplay}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">BURNED:</span>
+                          <span className="text-orange-400 font-bold">{burnedAmount}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">SUPPLY:</span>
+                          <span className="text-cyan-400 font-bold">1B CTHU</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm font-mono">
+                        <span className="text-gray-500">FARM ALLOCATION:</span>
+                        <span className="text-yellow-400 font-bold">885M CTHU</span>
+                        <span className="text-gray-600">(4 years)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
