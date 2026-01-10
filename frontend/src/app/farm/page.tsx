@@ -206,7 +206,7 @@ export default function FarmPage() {
   // Effect: Handle harvest success
   useEffect(() => {
     if (isHarvestSuccess) {
-      addLog('Rewards harvested!')
+      addLog('CTHU claimed!')
       refetchPending()
       refetchUserInfo()
     }
@@ -248,7 +248,7 @@ export default function FarmPage() {
 
   const handleHarvest = () => {
     if (selectedPool === null) return
-    addLog('Harvesting rewards...')
+    addLog('Claiming CTHU...')
     harvest({
       address: FARM_ADDRESS,
       abi: FARM_ABI,
@@ -350,7 +350,7 @@ export default function FarmPage() {
               <div>Total Value Locked: $---,---</div>
               <div>Current Emission:   {EMISSIONS[currentYear - 1]?.rate || 0} CTHU/sec (Year {currentYear})</div>
               <div>Your Total Staked:  $0.00</div>
-              <div>Pending Rewards:    0.00 CTHU</div>
+              <div>Pending CTHU:       0.00 CTHU</div>
             </div>
 
             <div className="text-gray-600 mb-4">{'-'.repeat(40)}</div>
@@ -604,7 +604,7 @@ export default function FarmPage() {
                       disabled={isLoading || !pendingCthu || pendingCthu === 0n}
                       className="text-cyan-500 hover:text-cyan-400 block disabled:text-gray-600"
                     >
-                      {'>'} {isHarvesting || isHarvestConfirming ? 'HARVESTING...' : 'HARVEST REWARDS'}
+                      {'>'} {isHarvesting || isHarvestConfirming ? 'CLAIMING...' : 'CLAIM CTHU'}
                       {pendingCthu && pendingCthu > 0n && (
                         <span className="text-cyan-700 ml-2">
                           ({parseFloat(formatEther(pendingCthu)).toFixed(2)} CTHU)

@@ -297,25 +297,28 @@ export default function RoadmapPage() {
 
           <div className="text-gray-600 my-6">{'-'.repeat(50)}</div>
 
-          {/* Trust Model Explanation */}
+          {/* Mechanism Explanation */}
           <div className="mb-6 p-4 border border-gray-800">
-            <div className="text-gray-400 mb-3">TRUST MODEL:</div>
+            <div className="text-gray-400 mb-3">LOCK MECHANISM:</div>
             <pre className="text-xs text-gray-500 overflow-x-auto">
 {`┌─────────────────────────────────────────────────────────┐
 │  BEFORE LOCK                                            │
-│  ├── Owner CAN recover farm rewards                     │
-│  └── Owner CAN pull LP tokens                           │
+│  ├── Owner CAN recover farm tokens                      │
+│  └── Owner CAN withdraw LP tokens                       │
 └─────────────────────────────────────────────────────────┘
                         │
                         ▼  lockFarm() + burn LP
 ┌─────────────────────────────────────────────────────────┐
 │  AFTER LOCK                                             │
-│  ├── 885M CTHU locked FOREVER in farm                   │
-│  ├── Initial liquidity locked FOREVER                   │
-│  ├── Users can ALWAYS withdraw + harvest                │
-│  └── NO POSSIBLE RUG                                    │
+│  ├── Farm tokens locked in contract                     │
+│  ├── Initial LP tokens burned                           │
+│  └── Users can withdraw + claim from farm               │
 └─────────────────────────────────────────────────────────┘`}
             </pre>
+            <div className="text-amber-600 text-xs mt-2">
+              Note: Locking reduces certain risks but does not eliminate all risks.
+              Smart contract bugs, exploits, or unforeseen issues may still occur.
+            </div>
           </div>
 
           {/* Emission Schedule */}

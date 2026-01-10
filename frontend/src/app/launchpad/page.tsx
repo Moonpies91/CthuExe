@@ -81,7 +81,7 @@ export default function LaunchpadPage() {
               <div>[*] Fair launch bonding curves</div>
               <div>[*] Automatic LP creation</div>
               <div>[*] LP tokens burned on graduation</div>
-              <div>[*] No presales, no rugs</div>
+              <div>[*] No presales, fair launch only</div>
               <div>[*] 100 MON launch fee (burned as CTHU)</div>
             </div>
 

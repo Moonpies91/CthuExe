@@ -28,12 +28,15 @@ export function DisclaimerBanner() {
             </span>
             <div className="text-sm">
               <div className="text-red-400 font-mono font-bold mb-1">
-                EXPERIMENTAL PROJECT WARNING
+                RISK WARNING
               </div>
               <div className="text-red-300/80 font-mono text-xs leading-relaxed">
-                This is a solo developer hobby project exploring blockchain and web development.
-                It is highly experimental - expect bugs, breaking changes, and potential loss of funds.
-                Do not invest more than you can afford to lose. DYOR.
+                <p className="mb-2">
+                  <strong>Don&apos;t invest unless you&apos;re prepared to lose all the money you invest.</strong> This is a high-risk investment and you are unlikely to be protected if something goes wrong.
+                </p>
+                <p>
+                  This is an experimental hobby project by a solo developer. It is not regulated, not financial advice, and carries significant risk of total loss. Smart contracts may contain bugs. Do your own research.
+                </p>
               </div>
             </div>
           </div>

@@ -937,7 +937,7 @@ export default function HomePage() {
                     href="/farm"
                     number="3"
                     label="FARM"
-                    description="Stake LP for rewards"
+                    description="LP token staking"
                     color="text-emerald-700 hover:text-emerald-500"
                     dimColor="text-emerald-900"
                     delay={0}
@@ -987,7 +987,7 @@ export default function HomePage() {
                       {`TVL: ${tvlDisplay} | BURNED: ${burnedAmount} | SUPPLY: 1B CTHU`}
                     </TypeLine>
                     <TypeLine delay={400} speed={18} glitchIntensity={0.04} className="text-gray-600" showCursor={false}>
-                      FARM REWARDS: 885M CTHU (4 years)
+                      FARM ALLOCATION: 885M CTHU (4 years)
                     </TypeLine>
                   </div>
                 </div>
