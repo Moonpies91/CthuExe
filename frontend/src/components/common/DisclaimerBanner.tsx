@@ -32,10 +32,10 @@ export function DisclaimerBanner() {
               </div>
               <div className="text-red-300/80 font-mono text-xs leading-relaxed">
                 <p className="mb-2">
-                  <strong>Don&apos;t invest unless you&apos;re prepared to lose all the money you invest.</strong> This is a high-risk investment and you are unlikely to be protected if something goes wrong.
+                  <strong>This is experimental software.</strong> Only use funds you can afford to lose entirely. You are unlikely to be protected if something goes wrong.
                 </p>
                 <p>
-                  This is an experimental hobby project by a solo developer. It is not regulated, not financial advice, and carries significant risk of total loss. Smart contracts may contain bugs. Do your own research.
+                  This is a hobby project by a solo developer exploring blockchain technology. It is unregulated, not financial advice, and smart contracts may contain bugs. Do your own research.
                 </p>
               </div>
             </div>
