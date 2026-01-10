@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Providers } from './providers'
+import { DisclaimerBanner } from '@/components/common/DisclaimerBanner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="terminal">
         <Providers>
+          <DisclaimerBanner />
           {children}
         </Providers>
       </body>
