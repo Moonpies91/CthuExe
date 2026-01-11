@@ -10,16 +10,16 @@ import { useSanityMode } from '@/hooks/useSanityMode'
 // Contract information
 const CONTRACTS = [
   {
-    name: 'CTHU.EXE Token',
+    name: 'CTHU.EXE',
     address: '0xb8957912629C4b69F4FDea5b804B6438385c59bd',
-    description: 'ERC20 token with 1B total supply. 885M farm rewards, 100M dev vesting, 15M initial liquidity.',
+    description: 'ᚦᚨᛏ ᛁᛊ ᚾᛟᛏ ᛞᛖᚨᛞ ᚹᚺᛁᚲᚺ ᚲᚨᚾ ᛖᛏᛖᚱᚾᚨᛚ ᛚᛁᛖ',
     type: 'Token',
   },
   {
-    name: 'CthuFarm',
+    name: 'THE VOID',
     address: '0x7DD345E93A6427Da795c3ca117CC5b4fa3e05849',
-    description: 'Yield farming contract. 885M CTHU rewards distributed over 4 years with halving schedule.',
-    type: 'Farm',
+    description: 'Ph\'nglui mglw\'nafh Cthulhu R\'lyeh wgah\'nagl fhtagn',
+    type: 'Void',
   },
 ]
 
@@ -30,9 +30,7 @@ function shortenAddress(address: string) {
 function TypeBadge({ type }: { type: string }) {
   const colors: Record<string, string> = {
     Token: 'text-green-500 border-green-800',
-    Farm: 'text-amber-500 border-amber-800',
-    DEX: 'text-blue-500 border-blue-800',
-    LP: 'text-purple-500 border-purple-800',
+    Void: 'text-purple-500 border-purple-800',
   }
   return (
     <span className={`text-xs px-2 py-0.5 border ${colors[type] || 'text-gray-500 border-gray-800'}`}>
