@@ -61,7 +61,7 @@ export default function FarmPage() {
   const { madnessLevel } = useGlitchLevel()
   const { sanityMode } = useSanityMode()
   const [selectedPool, setSelectedPool] = useState<number | null>(null)
-  const [logs] = useState<string[]>(['Farm monitor loaded.', 'Read-only mode active.', 'Fetching on-chain data...'])
+  const [logs] = useState<string[]>(['The void stirs...', 'Observation mode active.', 'Gazing into the abyss...'])
   const [currentYear, setCurrentYear] = useState(1)
 
   const contracts = CONTRACTS.mainnet
@@ -141,8 +141,8 @@ export default function FarmPage() {
               <Link href="/" className="text-gray-600 hover:text-emerald-600">{'<'} BACK TO MAIN</Link>
             </div>
 
-            <div className="text-emerald-600 mb-2">ELDRITCH FARMS - STATUS MONITOR</div>
-            <div className="text-gray-600 text-xs mb-4">[READ-ONLY VIEW]</div>
+            <div className="text-purple-500 mb-2">THE VOID</div>
+            <div className="text-gray-600 text-xs mb-4">[OBSERVATION MODE]</div>
 
             {/* Real-time Emission Counter */}
             <div className="mb-4 p-3 border border-emerald-900/50 bg-emerald-950/20">
@@ -299,32 +299,32 @@ export default function FarmPage() {
           <div className="hidden lg:block">
             <StickyPanel topOffset={24}>
               <TerminalLog
-                title="monitor.log"
-                headerColor="text-emerald-600"
-                headerTitle="FARM MONITOR"
+                title="void.log"
+                headerColor="text-purple-500"
+                headerTitle="THE VOID"
                 staticInfo={[
-                  { label: 'Mode', value: 'READ-ONLY' },
-                  { label: 'Contract', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
+                  { label: 'Mode', value: 'OBSERVE' },
+                  { label: 'Sigil', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
                 ]}
                 logs={logs}
-                statusText="Monitoring"
-                statusColor="green"
+                statusText="Watching"
+                statusColor="purple"
               />
             </StickyPanel>
           </div>
           {/* Mobile version */}
           <div className="lg:hidden">
             <TerminalLog
-              title="monitor.log"
-              headerColor="text-emerald-600"
-              headerTitle="FARM MONITOR"
+              title="void.log"
+              headerColor="text-purple-500"
+              headerTitle="THE VOID"
               staticInfo={[
-                { label: 'Mode', value: 'READ-ONLY' },
-                { label: 'Contract', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
+                { label: 'Mode', value: 'OBSERVE' },
+                { label: 'Sigil', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
               ]}
               logs={logs}
-              statusText="Monitoring"
-              statusColor="green"
+              statusText="Watching"
+              statusColor="purple"
             />
           </div>
         </div>

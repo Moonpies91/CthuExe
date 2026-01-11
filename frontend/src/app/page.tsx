@@ -848,10 +848,10 @@ export default function HomePage() {
                   <TerminalMenuItem
                     href="/farm"
                     number="1"
-                    label="FARM MONITOR"
-                    description="View emission status"
-                    color="text-emerald-700 hover:text-emerald-500"
-                    dimColor="text-emerald-900"
+                    label="THE VOID"
+                    description="Peer into the abyss"
+                    color="text-purple-700 hover:text-purple-500"
+                    dimColor="text-purple-900"
                     delay={0}
                   />
                 )}
