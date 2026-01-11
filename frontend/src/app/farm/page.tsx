@@ -308,7 +308,7 @@ export default function FarmPage() {
                 ]}
                 logs={logs}
                 statusText="Watching"
-                statusColor="purple"
+                statusColor="gray"
               />
             </StickyPanel>
           </div>
@@ -324,7 +324,7 @@ export default function FarmPage() {
               ]}
               logs={logs}
               statusText="Watching"
-              statusColor="purple"
+              statusColor="gray"
             />
           </div>
         </div>
