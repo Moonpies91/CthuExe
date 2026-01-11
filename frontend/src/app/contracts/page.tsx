@@ -12,8 +12,8 @@ const CONTRACTS = [
   {
     name: 'CTHU.EXE',
     address: '0xb8957912629C4b69F4FDea5b804B6438385c59bd',
-    description: 'ᚦᚨᛏ ᛁᛊ ᚾᛟᛏ ᛞᛖᚨᛞ ᚹᚺᛁᚲᚺ ᚲᚨᚾ ᛖᛏᛖᚱᚾᚨᛚ ᛚᛁᛖ',
-    type: 'Token',
+    description: 'Iä! Iä! Cthulhu fhtagn! ᛉᚨᛚᚷᛟ ᚲᛟᛗᛖᛊ',
+    type: 'Void',
   },
   {
     name: 'THE VOID',
