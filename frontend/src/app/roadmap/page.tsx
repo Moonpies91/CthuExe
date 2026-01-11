@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Scanlines } from '@/components/terminal/Scanlines'
 import { GlitchOverlay } from '@/components/terminal/GlitchOverlay'
@@ -18,7 +18,6 @@ const FARM_ABI = [
 interface RoadmapItem {
   text: string
   done: boolean
-  critical?: boolean
 }
 
 interface RoadmapPhase {
@@ -29,7 +28,7 @@ interface RoadmapPhase {
   items: RoadmapItem[]
 }
 
-// Roadmap phases with eldritch naming
+// Roadmap phases - historical record of the project
 const ROADMAP_PHASES: RoadmapPhase[] = [
   {
     id: 'phase-1',
@@ -52,45 +51,20 @@ const ROADMAP_PHASES: RoadmapPhase[] = [
     items: [
       { text: 'Complete security audit', done: true },
       { text: 'Verify all contracts on explorer', done: true },
-      { text: 'Lock farm rewards (885M CTHU)', done: false, critical: true },
-      { text: 'Burn initial LP tokens', done: false, critical: true },
-      { text: 'Publish transparency report', done: false },
+      { text: 'Transition to information-only display', done: true },
+      { text: 'Lock farm rewards (885M CTHU)', done: false },
+      { text: 'Burn initial LP tokens', done: false },
     ],
   },
   {
     id: 'phase-3',
-    name: 'THE SUMMONING',
-    subtitle: 'Launchpad & Community',
+    name: 'THE DORMANCY',
+    subtitle: 'Experimental Status',
     status: 'pending' as const,
     items: [
-      { text: 'Activate Cultist Launchpad', done: false },
-      { text: 'First community token launch', done: false },
-      { text: 'Implement burn leaderboard', done: false },
-      { text: 'Community governance discussions', done: false },
-    ],
-  },
-  {
-    id: 'phase-4',
-    name: 'THE ASCENSION',
-    subtitle: 'Expansion',
-    status: 'pending' as const,
-    items: [
-      { text: 'Cross-chain bridge exploration', done: false },
-      { text: 'Advanced farming strategies', done: false },
-      { text: 'Partnership integrations', done: false },
-      { text: 'Mobile-optimized interface', done: false },
-    ],
-  },
-  {
-    id: 'phase-5',
-    name: 'THE ETERNAL',
-    subtitle: 'Decentralization',
-    status: 'pending' as const,
-    items: [
-      { text: 'DAO governance implementation', done: false },
-      { text: 'Multi-sig treasury transition', done: false },
-      { text: 'Community-driven development', done: false },
-      { text: 'Full protocol decentralization', done: false },
+      { text: 'Monitor contract emissions', done: false },
+      { text: 'Document learnings', done: false },
+      { text: 'Open source codebase', done: false },
     ],
   },
 ]
@@ -151,66 +125,37 @@ export default function RoadmapPage() {
             <Link href="/" className="text-gray-600 hover:text-gray-400">{'<'} BACK TO MAIN</Link>
           </div>
 
-          <div className="text-white mb-2 text-lg">ROADMAP.exe</div>
+          <div className="text-white mb-2 text-lg">PROJECT HISTORY</div>
           <div className="text-gray-500 mb-6 text-sm italic">
-            "That is not dead which can eternal lie..."
+            &quot;That is not dead which can eternal lie...&quot;
           </div>
 
           <div className="text-gray-600 mb-6">{'-'.repeat(50)}</div>
 
-          {/* Security Status Banner */}
+          {/* Info Notice */}
+          <div className="mb-6 p-4 border border-blue-900/50 bg-blue-950/20">
+            <div className="text-blue-400 mb-2">INFORMATION DISPLAY</div>
+            <div className="text-gray-500 text-sm">
+              This page displays historical project milestones and on-chain status.
+              This website does not facilitate any transactions.
+            </div>
+          </div>
+
+          {/* Contract Status */}
           <div className="mb-6 p-4 border border-gray-800 bg-gray-950">
-            <div className="text-gray-400 mb-2 text-sm">PROTOCOL SECURITY STATUS:</div>
+            <div className="text-gray-400 mb-2 text-sm">ON-CHAIN STATUS:</div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-gray-500">Farm Lock:</span>
                 {farmLocked ? (
                   <span className="text-green-500">[LOCKED]</span>
                 ) : (
-                  <span className="text-amber-500">[PENDING]</span>
+                  <span className="text-amber-500">[UNLOCKED]</span>
                 )}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500">LP Tokens:</span>
-                <span className="text-amber-500">[BURN PENDING]</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500">Audit:</span>
-                <span className="text-green-500">[COMPLETE]</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-500">Contracts:</span>
                 <span className="text-green-500">[VERIFIED]</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Critical Actions Box */}
-          <div className="mb-6 p-4 border border-amber-900/50 bg-amber-950/20">
-            <div className="text-amber-500 mb-3 flex items-center gap-2">
-              <span className="animate-pulse">▶</span>
-              PENDING SECURITY ACTIONS:
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-start gap-3">
-                <span className="text-amber-600">[1]</span>
-                <div>
-                  <div className="text-amber-400">LOCK FARM REWARDS</div>
-                  <div className="text-gray-500 text-xs mt-1">
-                    Calling lockFarm() permanently prevents owner from recovering 885M CTHU rewards.
-                    Users can always withdraw their LP tokens and harvest rewards.
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-amber-600">[2]</span>
-                <div>
-                  <div className="text-amber-400">BURN LP TOKENS</div>
-                  <div className="text-gray-500 text-xs mt-1">
-                    Sending initial LP tokens to 0xdead permanently locks liquidity.
-                    Creates a permanent price floor - liquidity can never be pulled.
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -274,18 +219,15 @@ export default function RoadmapPage() {
                         <div
                           key={idx}
                           className={`flex items-start gap-3 text-sm ${
-                            item.done ? 'text-gray-500' : item.critical ? 'text-amber-400' : 'text-gray-400'
+                            item.done ? 'text-gray-500' : 'text-gray-400'
                           }`}
                         >
-                          <span className={item.done ? 'text-green-500' : item.critical ? 'text-amber-500' : 'text-gray-600'}>
-                            {item.done ? '[x]' : item.critical ? '[!]' : '[ ]'}
+                          <span className={item.done ? 'text-green-500' : 'text-gray-600'}>
+                            {item.done ? '[x]' : '[ ]'}
                           </span>
                           <span className={item.done ? 'line-through' : ''}>
                             {item.text}
                           </span>
-                          {item.critical && !item.done && (
-                            <span className="text-amber-600 text-xs">(CRITICAL)</span>
-                          )}
                         </div>
                       ))}
                     </div>
@@ -297,33 +239,9 @@ export default function RoadmapPage() {
 
           <div className="text-gray-600 my-6">{'-'.repeat(50)}</div>
 
-          {/* Mechanism Explanation */}
+          {/* Emission Schedule - Historical Record */}
           <div className="mb-6 p-4 border border-gray-800">
-            <div className="text-gray-400 mb-3">LOCK MECHANISM:</div>
-            <pre className="text-xs text-gray-500 overflow-x-auto">
-{`┌─────────────────────────────────────────────────────────┐
-│  BEFORE LOCK                                            │
-│  ├── Owner CAN recover farm tokens                      │
-│  └── Owner CAN withdraw LP tokens                       │
-└─────────────────────────────────────────────────────────┘
-                        │
-                        ▼  lockFarm() + burn LP
-┌─────────────────────────────────────────────────────────┐
-│  AFTER LOCK                                             │
-│  ├── Farm tokens locked in contract                     │
-│  ├── Initial LP tokens burned                           │
-│  └── Users can withdraw + claim from farm               │
-└─────────────────────────────────────────────────────────┘`}
-            </pre>
-            <div className="text-amber-600 text-xs mt-2">
-              Note: Locking reduces certain risks but does not eliminate all risks.
-              Smart contract bugs, exploits, or unforeseen issues may still occur.
-            </div>
-          </div>
-
-          {/* Emission Schedule */}
-          <div className="mb-6 p-4 border border-gray-800">
-            <div className="text-gray-400 mb-3">FARM EMISSION SCHEDULE:</div>
+            <div className="text-gray-400 mb-3">FARM EMISSION SCHEDULE (REFERENCE):</div>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between text-gray-500">
                 <span>Year 1:</span>
@@ -352,14 +270,14 @@ export default function RoadmapPage() {
           {/* Footer */}
           <div className="text-gray-600 text-xs">
             <div>Last updated: {new Date().toISOString().split('T')[0]}</div>
-            <div className="mt-2">
-              Contract addresses and audit reports available on request.
+            <div className="mt-2 text-gray-700">
+              This is an experimental hobby project. No financial advice is provided.
             </div>
           </div>
 
           {/* Prompt */}
           <div className="mt-6 pt-4 border-t border-gray-800">
-            <span className="text-gray-500">roadmap@cthu-os:~$</span> <BlinkingCursor />
+            <span className="text-gray-500">observer@cthu-os:~$</span> <BlinkingCursor />
           </div>
         </div>
       </div>

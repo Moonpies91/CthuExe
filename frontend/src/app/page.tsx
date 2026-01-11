@@ -11,8 +11,7 @@ import { TerminalLog } from '@/components/terminal/TerminalLog'
 import { useBootSequence } from '@/hooks/useBootSequence'
 import { useGlitchLevel } from '@/hooks/useGlitchLevel'
 import { useSanityMode } from '@/hooks/useSanityMode'
-import { useAccount, useReadContract } from 'wagmi'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useReadContract } from 'wagmi'
 import { formatEther } from 'viem'
 import { CONTRACTS, BURN_ADDRESS } from '@/config/contracts'
 
@@ -37,7 +36,7 @@ function corruptText(text: string, intensity: number = 0.1): string {
   }).join('')
 }
 
-// Eldritch loading glitch overlay - localized glitches instead of full screen
+// Eldritch loading glitch overlay
 function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, intensity?: number }) {
   const [glitchBlocks, setGlitchBlocks] = useState<Array<{
     x: number, y: number, width: number, height: number, type: 'corrupt' | 'shift' | 'rune'
@@ -49,7 +48,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
     if (!active) return
 
     const glitchInterval = setInterval(() => {
-      // Localized glitch blocks (small rectangles with distortion)
       if (Math.random() < 0.15 * intensity) {
         const newBlocks = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
           x: Math.random() * 80 + 10,
@@ -62,7 +60,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
         setTimeout(() => setGlitchBlocks([]), 60 + Math.random() * 100)
       }
 
-      // Short horizontal glitch lines (not full width)
       if (Math.random() < 0.12 * intensity) {
         const newLines = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
           top: Math.random() * 100,
@@ -74,7 +71,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
         setTimeout(() => setGlitchLines([]), 50 + Math.random() * 80)
       }
 
-      // Floating eldritch runes that appear briefly
       if (Math.random() < 0.1 * intensity) {
         const newRunes = Array.from({ length: Math.floor(Math.random() * 4) + 1 }, () => ({
           x: Math.random() * 90 + 5,
@@ -94,7 +90,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
 
   return (
     <>
-      {/* Localized glitch blocks */}
       {glitchBlocks.map((block, i) => (
         <div
           key={`block-${i}`}
@@ -115,7 +110,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
         />
       ))}
 
-      {/* Short horizontal glitch lines */}
       {glitchLines.map((line, i) => (
         <div
           key={`line-${i}`}
@@ -131,7 +125,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
         />
       ))}
 
-      {/* Floating eldritch runes */}
       {floatingRunes.map((rune, i) => (
         <div
           key={`rune-${i}`}
@@ -149,7 +142,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
         </div>
       ))}
 
-      {/* Subtle scanline effect */}
       <div
         className="fixed inset-0 pointer-events-none z-30 opacity-30"
         style={{
@@ -218,7 +210,7 @@ const CTHULHU_ASCII = `                                ===~=:
                          ^>*
                          *>*`
 
-// Chromatic Aberration ASCII Component with heavy RGB split - renders character by character with glitches
+// Chromatic Aberration ASCII Component
 function ChromaticCthulhu({ className = '' }: { className?: string }) {
   const [offset, setOffset] = useState(0)
   const [visibleChars, setVisibleChars] = useState(0)
@@ -228,18 +220,15 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
   const totalChars = CTHULHU_ASCII.length
   const isComplete = visibleChars >= totalChars
 
-  // Render characters progressively - slower for effect
   useEffect(() => {
     if (visibleChars < totalChars) {
       const timer = setTimeout(() => {
-        // Type multiple characters at once
         setVisibleChars(prev => Math.min(prev + 4, totalChars))
       }, 3)
       return () => clearTimeout(timer)
     }
   }, [visibleChars, totalChars])
 
-  // Subtle animation for the chromatic aberration
   useEffect(() => {
     const interval = setInterval(() => {
       setOffset(Math.sin(Date.now() / 1000) * 0.5)
@@ -247,7 +236,6 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
     return () => clearInterval(interval)
   }, [])
 
-  // Glitch effects while rendering
   useEffect(() => {
     if (isComplete) return
     const glitchInterval = setInterval(() => {
@@ -275,7 +263,6 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
       className={`relative font-mono text-[5px] sm:text-[6px] leading-[1.1] select-none ${className}`}
       style={{ transform: `translate(${glitchOffset.x}px, ${glitchOffset.y}px)` }}
     >
-      {/* Red channel - offset left and up - HEAVY */}
       <pre
         className="absolute text-red-500/70 whitespace-pre"
         style={{
@@ -285,7 +272,6 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
       >
         {visibleAscii}
       </pre>
-      {/* Magenta ghost */}
       <pre
         className="absolute text-fuchsia-500/30 whitespace-pre"
         style={{
@@ -295,11 +281,9 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
       >
         {visibleAscii}
       </pre>
-      {/* Green channel - center (main) */}
       <pre className="absolute text-green-400/80 whitespace-pre">
         {visibleAscii}
       </pre>
-      {/* Blue channel - offset right and down - HEAVY */}
       <pre
         className="absolute text-cyan-400/70 whitespace-pre"
         style={{
@@ -309,7 +293,6 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
       >
         {visibleAscii}
       </pre>
-      {/* Extra blue ghost for more aberration */}
       <pre
         className="absolute text-blue-500/30 whitespace-pre"
         style={{
@@ -319,7 +302,6 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
       >
         {visibleAscii}
       </pre>
-      {/* White overlay for definition */}
       <pre className="relative text-white/20 whitespace-pre">
         {visibleAscii}
         {!isComplete && <span className="text-green-500 animate-pulse">█</span>}
@@ -328,7 +310,7 @@ function ChromaticCthulhu({ className = '' }: { className?: string }) {
   )
 }
 
-// Typing animation component with terminal cursor and glitch effects
+// Typing animation component
 function TypeLine({
   children,
   delay = 0,
@@ -370,7 +352,6 @@ function TypeLine({
     }
   }, [started, displayed, children, speed, complete, onComplete])
 
-  // Random glitch effect while typing
   useEffect(() => {
     if (complete || !started) return
     const glitchInterval = setInterval(() => {
@@ -397,16 +378,15 @@ function TypeLine({
   )
 }
 
-// Eldritch rune sets for logo corruption
+// ASCII Logo Component
 const RUNE_SETS = [
-  'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛝᛟᛞ', // Elder Futhark
-  'ΨΩΦΘΞΣΠΛΔᾨᾯᾦᾥᾤᾣᾢᾡ', // Greek/Coptic
-  '⌇⌆⌅⌄⌃⌂⌁⌀⍟⍝⍜⍛⍚⍙⍘⍗', // Technical symbols
-  '☠☢☣⚰⚱⛧⛤⛥⛦⛉⛊', // Occult symbols
-  '𐌀𐌁𐌂𐌃𐌄𐌅𐌆𐌇𐌈𐌉𐌊𐌋𐌌𐌍', // Old Italic
+  'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛝᛟᛞ',
+  'ΨΩΦΘΞΣΠΛΔᾨᾯᾦᾥᾤᾣᾢᾡ',
+  '⌇⌆⌅⌄⌃⌂⌁⌀⍟⍝⍜⍛⍚⍙⍘⍗',
+  '☠☢☣⚰⚱⛧⛤⛥⛦⛉⛊',
+  '𐌀𐌁𐌂𐌃𐌄𐌅𐌆𐌇𐌈𐌉𐌊𐌋𐌌𐌍',
 ]
 
-// Generate a fully corrupted rune version of the logo
 function generateRuneLogo(lines: string[]): string[] {
   const runeSet = RUNE_SETS[Math.floor(Math.random() * RUNE_SETS.length)]
   return lines.map(line =>
@@ -417,10 +397,8 @@ function generateRuneLogo(lines: string[]): string[] {
   )
 }
 
-// Glitch effect types
 type GlitchEffect = 'none' | 'corrupt' | 'runes' | 'tear' | 'invert' | 'chromatic' | 'static' | 'shift' | 'flicker'
 
-// ASCII art that renders line by line like a terminal with INTENSE glitches
 function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
   const lines = [
     ' ░▒▓██████▓▒░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░',
@@ -459,14 +437,12 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
     }
   }, [started, visibleLines, lines.length])
 
-  // INTENSE random glitch effects after logo is complete
   useEffect(() => {
     if (!isComplete) return
 
     const glitchInterval = setInterval(() => {
       const rand = Math.random()
 
-      // 15% chance of a glitch event
       if (rand < 0.15) {
         const effects: GlitchEffect[] = ['corrupt', 'runes', 'tear', 'invert', 'chromatic', 'static', 'shift', 'flicker']
         const effect = effects[Math.floor(Math.random() * effects.length)]
@@ -474,7 +450,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
 
         switch (effect) {
           case 'runes':
-            // Full transformation to eldritch runes
             setRuneLines(generateRuneLogo(lines))
             setTimeout(() => {
               setGlitchEffect('none')
@@ -483,7 +458,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'corrupt':
-            // Corrupt random lines
             const numLines = Math.floor(Math.random() * 4) + 1
             const targetLines = Array.from({ length: numLines }, () =>
               Math.floor(Math.random() * lines.length)
@@ -497,7 +471,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'tear':
-            // Screen tear - shift lines horizontally
             setLineOffsets(lines.map(() => (Math.random() - 0.5) * 30))
             setTimeout(() => {
               setGlitchEffect('none')
@@ -506,7 +479,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'chromatic':
-            // Intense chromatic aberration
             setChromaticOffset({
               r: (Math.random() - 0.5) * 12,
               g: 0,
@@ -519,7 +491,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'static':
-            // Static noise overlay
             const noiseLines = lines.map(line =>
               line.split('').map(char => {
                 if (Math.random() < 0.3) {
@@ -537,7 +508,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'shift':
-            // Vertical line shift (swap lines)
             const swapIdx = Math.floor(Math.random() * (lines.length - 1))
             const shiftedContent = [...lines]
             ;[shiftedContent[swapIdx], shiftedContent[swapIdx + 1]] =
@@ -551,7 +521,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
 
           case 'flicker':
-            // Rapid opacity flicker
             let flickerCount = 0
             const flickerInterval = setInterval(() => {
               setFlickerOpacity(Math.random() < 0.5 ? 0.1 : 1)
@@ -569,12 +538,11 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
             break
         }
       }
-    }, 800 + Math.random() * 1500) // Random interval between glitches
+    }, 800 + Math.random() * 1500)
 
     return () => clearInterval(glitchInterval)
   }, [isComplete, lines])
 
-  // Subtle ambient glitch for individual lines
   useEffect(() => {
     if (!isComplete) return
     const ambientInterval = setInterval(() => {
@@ -601,7 +569,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
       className="relative"
       style={{ opacity: flickerOpacity }}
     >
-      {/* Red channel for chromatic aberration */}
       {glitchEffect === 'chromatic' && (
         <pre
           className="absolute text-red-500/60 leading-none text-[8px] sm:text-[10px] md:text-xs overflow-x-auto pointer-events-none"
@@ -611,7 +578,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
         </pre>
       )}
 
-      {/* Blue channel for chromatic aberration */}
       {glitchEffect === 'chromatic' && (
         <pre
           className="absolute text-cyan-500/60 leading-none text-[8px] sm:text-[10px] md:text-xs overflow-x-auto pointer-events-none"
@@ -621,7 +587,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
         </pre>
       )}
 
-      {/* Main logo */}
       <pre
         className={`leading-none text-[8px] sm:text-[10px] md:text-xs overflow-x-auto transition-none ${
           glitchEffect === 'invert' ? 'bg-white text-black' : 'text-white'
@@ -655,7 +620,6 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
         )}
       </pre>
 
-      {/* Glitch overlay effects */}
       {glitchEffect === 'static' && (
         <div
           className="absolute inset-0 pointer-events-none opacity-30"
@@ -669,7 +633,7 @@ function TerminalAsciiLogo({ delay = 0 }: { delay?: number }) {
   )
 }
 
-// Menu item that types in
+// Menu item component
 function TerminalMenuItem({
   href,
   number,
@@ -711,27 +675,23 @@ export default function HomePage() {
   const { showBoot, completeBoot, isLoaded: bootLoaded } = useBootSequence()
   const { madnessLevel } = useGlitchLevel()
   const { sanityMode, toggleSanityMode, isLoaded: sanityLoaded } = useSanityMode()
-  const { isConnected, address } = useAccount()
 
-  // Check if animation has already played this session
   const [hasPlayedAnimation, setHasPlayedAnimation] = useState<boolean | null>(null)
   const [animationPhase, setAnimationPhase] = useState(0)
-  // Phases: 0=init, 1=header, 2=logo, 3=tagline, 4=wallet, 5=menu prompt, 6-10=menu items, 11=stats, 12=complete
   const [systemLogs, setSystemLogs] = useState<string[]>(['System boot initiated...'])
 
-  // Check sessionStorage on mount
   useEffect(() => {
     const played = sessionStorage.getItem('cthu-animation-played')
     if (played === 'true') {
       setHasPlayedAnimation(true)
-      setAnimationPhase(12) // Skip to complete
+      setAnimationPhase(12)
       setSystemLogs([
         'System boot initiated...',
         'Initializing neural interface...',
-        'Loading contract ABIs... OK',
+        'Loading on-chain data... OK',
         'Connecting to RPC... OK',
         'Syncing with chain ID 143... OK',
-        'System ready.',
+        'System ready. [INFO MODE]',
       ])
     } else {
       setHasPlayedAnimation(false)
@@ -753,25 +713,20 @@ export default function HomePage() {
     functionName: 'getReserves',
   })
 
-  // Read which token is token0 in the pair
   const { data: token0 } = useReadContract({
     address: CONTRACTS.mainnet.CTHU_MONAD_PAIR as `0x${string}`,
     abi: PAIR_ABI,
     functionName: 'token0',
   })
 
-  // Format burned amount
   const burnedAmount = burnedBalance
     ? Number(formatEther(burnedBalance)).toLocaleString(undefined, { maximumFractionDigits: 0 })
     : '---,---'
 
-  // Calculate TVL (in MONAD terms, doubled since both sides have equal value)
-  // We need to figure out which reserve is MONAD
   const tvlInMonad = (() => {
     if (!pairReserves || !token0) return null
     const isCthuToken0 = token0.toLowerCase() === CONTRACTS.mainnet.CTHUCOIN.toLowerCase()
     const monadReserve = isCthuToken0 ? pairReserves[1] : pairReserves[0]
-    // TVL = 2 * MONAD reserve (since both sides have equal value)
     return Number(formatEther(monadReserve)) * 2
   })()
 
@@ -781,46 +736,38 @@ export default function HomePage() {
 
   useEffect(() => {
     if (showBoot || !bootLoaded || !sanityLoaded || hasPlayedAnimation === null) return
-
-    // If animation already played, skip
     if (hasPlayedAnimation) return
 
-    // Start the animation sequence
     const logSequence = [
       { delay: 100, log: 'Initializing neural interface...' },
-      { delay: 400, log: 'Loading contract ABIs... OK' },
+      { delay: 400, log: 'Loading on-chain data... OK' },
       { delay: 700, log: 'Connecting to RPC... OK' },
       { delay: 1000, log: 'Syncing with chain ID 143... OK' },
-      { delay: 1300, log: 'System ready.' },
+      { delay: 1300, log: 'System ready. [INFO MODE]' },
     ]
 
-    // Add system logs with delays
     logSequence.forEach(({ delay, log }) => {
       setTimeout(() => {
         setSystemLogs(prev => [...prev, log])
       }, delay)
     })
 
-    // Animation sequence with calculated delays - slower with glitchy feel
     const phases = [
-      { phase: 1, delay: 200 },    // Header starts
-      { phase: 2, delay: 1200 },   // Logo starts
-      { phase: 3, delay: 1700 },   // Tagline starts
-      { phase: 4, delay: 3200 },   // Wallet status
-      { phase: 5, delay: 3800 },   // Menu prompt
-      { phase: 6, delay: 4200 },   // Menu item 1
-      { phase: 7, delay: 4600 },   // Menu item 2
-      { phase: 8, delay: 5000 },   // Menu item 3
-      { phase: 9, delay: 5400 },   // Menu item 4
-      { phase: 10, delay: 5800 },  // Menu item 5
-      { phase: 11, delay: 6200 },  // Stats
-      { phase: 12, delay: 7000 },  // Complete
+      { phase: 1, delay: 200 },
+      { phase: 2, delay: 1200 },
+      { phase: 3, delay: 1700 },
+      { phase: 4, delay: 3200 },
+      { phase: 5, delay: 3600 },
+      { phase: 6, delay: 4000 },
+      { phase: 7, delay: 4400 },
+      { phase: 8, delay: 4800 },
+      { phase: 9, delay: 5200 },
+      { phase: 12, delay: 5800 },
     ]
 
     phases.forEach(({ phase, delay }) => {
       setTimeout(() => {
         setAnimationPhase(phase)
-        // Mark animation as played when complete
         if (phase === 12) {
           sessionStorage.setItem('cthu-animation-played', 'true')
         }
@@ -841,7 +788,6 @@ export default function HomePage() {
       <Scanlines madnessLevel={madnessLevel} sanityMode={sanityMode} />
       <GlitchOverlay madnessLevel={madnessLevel} sanityMode={sanityMode} />
 
-      {/* Eldritch glitch overlay during loading - only on first visit */}
       <EldritchGlitchOverlay active={!showBoot && !hasPlayedAnimation && animationPhase < 12} intensity={animationPhase < 6 ? 1.2 : 0.6} />
 
       {showBoot ? (
@@ -851,7 +797,6 @@ export default function HomePage() {
           <div className="w-full max-w-5xl flex flex-col lg:flex-row lg:items-start gap-4">
             {/* Left Panel - Main Content */}
             <div className="flex-1 flex flex-col">
-              {/* Header line types in */}
               {animationPhase >= 1 && (
                 <TypeLine
                   delay={0}
@@ -859,16 +804,14 @@ export default function HomePage() {
                   glitchIntensity={0.12}
                   className="text-gray-500 text-xs mb-2"
                 >
-                  CTHU-OS v0.6.6.6 [MONAD MAINNET] | (c) 2025 Eldritch Systems Inc.
+                  CTHU-OS v0.6.6.6 [MONAD MAINNET] | INFO DISPLAY MODE
                 </TypeLine>
               )}
 
-              {/* ASCII Logo renders line by line */}
               {animationPhase >= 2 && (
                 <TerminalAsciiLogo delay={0} />
               )}
 
-              {/* Tagline types in */}
               {animationPhase >= 3 && (
                 <TypeLine
                   delay={0}
@@ -880,22 +823,13 @@ export default function HomePage() {
                 </TypeLine>
               )}
 
-              {/* Wallet Status */}
+              {/* Info Notice */}
               {animationPhase >= 4 && (
-                <div className="mb-2 text-sm">
-                  {isConnected ? (
-                    <TypeLine delay={0} speed={20} glitchIntensity={0.08} className="text-green-500">
-                      {`> WALLET: ${address?.slice(0, 6)}...${address?.slice(-4)} [CONNECTED]`}
-                    </TypeLine>
-                  ) : (
-                    <TypeLine delay={0} speed={20} glitchIntensity={0.08} className="text-yellow-500">
-                      {'> WALLET: NOT CONNECTED'}
-                    </TypeLine>
-                  )}
+                <div className="mb-3 p-2 border border-gray-800 bg-gray-950/50 text-xs text-gray-500">
+                  This is an information-only display. No transactions available through this interface.
                 </div>
               )}
 
-              {/* Menu Prompt */}
               {animationPhase >= 5 && (
                 <TypeLine
                   delay={0}
@@ -908,94 +842,59 @@ export default function HomePage() {
                 </TypeLine>
               )}
 
-              {/* Menu Items - each types in sequentially */}
+              {/* Menu Items - Info only */}
               <div className="mb-3 space-y-0 text-sm">
                 {animationPhase >= 6 && (
                   <TerminalMenuItem
-                    href="/swap"
-                    number="1"
-                    label="SWAP"
-                    description="Exchange tokens"
-                    color="text-teal-600 hover:text-teal-400"
-                    dimColor="text-teal-800"
-                    delay={0}
-                  />
-                )}
-                {animationPhase >= 7 && (
-                  <TerminalMenuItem
-                    href="/liquidity"
-                    number="2"
-                    label="LIQUIDITY"
-                    description="Add/remove LP"
-                    color="text-slate-400 hover:text-slate-300"
-                    dimColor="text-slate-600"
-                    delay={0}
-                  />
-                )}
-                {animationPhase >= 8 && (
-                  <TerminalMenuItem
                     href="/farm"
-                    number="3"
-                    label="FARM"
-                    description="LP token staking"
+                    number="1"
+                    label="FARM MONITOR"
+                    description="View emission status"
                     color="text-emerald-700 hover:text-emerald-500"
                     dimColor="text-emerald-900"
                     delay={0}
                   />
                 )}
-                {animationPhase >= 9 && (
+                {animationPhase >= 7 && (
                   <TerminalMenuItem
-                    href="/launchpad"
-                    number="4"
-                    label="LAUNCHPAD"
-                    description="Coming soon"
-                    color="text-violet-700/60 hover:text-violet-500"
-                    dimColor="text-violet-900"
+                    href="/contracts"
+                    number="2"
+                    label="CONTRACTS"
+                    description="View contract addresses"
+                    color="text-blue-600 hover:text-blue-400"
+                    dimColor="text-blue-900"
                     delay={0}
                   />
                 )}
-                {animationPhase >= 10 && (
-                  <TerminalMenuItem
-                    href="/leaderboard"
-                    number="5"
-                    label="LEADERBOARD"
-                    description="Coming soon"
-                    color="text-amber-700/60 hover:text-amber-500"
-                    dimColor="text-amber-900"
-                    delay={0}
-                  />
-                )}
-                {animationPhase >= 10 && (
+                {animationPhase >= 8 && (
                   <TerminalMenuItem
                     href="/roadmap"
-                    number="6"
+                    number="3"
                     label="ROADMAP"
-                    description="Project timeline"
+                    description="Project information"
                     color="text-gray-400 hover:text-white"
                     dimColor="text-gray-600"
-                    delay={200}
+                    delay={0}
                   />
                 )}
               </div>
 
-              {/* Stats - fade in after menu */}
-              {animationPhase >= 11 && (
+              {/* Stats */}
+              {animationPhase >= 9 && (
                 <div className="animate-[fadeIn_0.3s_ease-out]">
                   <div className="text-gray-700 text-xs mb-3">{'-'.repeat(50)}</div>
                   <div className="mb-3 p-3 border border-emerald-900/50 bg-emerald-950/20 relative overflow-hidden">
-                    {/* Scanline effect */}
                     <div className="absolute inset-0 pointer-events-none opacity-10">
                       <div className="h-full w-full" style={{
                         backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px)'
                       }} />
                     </div>
 
-                    {/* Stats content */}
                     <div className="space-y-2 relative z-10">
                       <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm font-mono">
                         <div className="flex items-center gap-2">
                           <span className="text-gray-500">TVL:</span>
-                          <span className="text-emerald-400 font-bold animate-pulse">{tvlDisplay}</span>
+                          <span className="text-emerald-400 font-bold">{tvlDisplay}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-gray-500">BURNED:</span>
@@ -1016,39 +915,17 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* Wallet Connect Button */}
-              {animationPhase >= 12 && !isConnected && (
-                <motion.div
-                  className="mb-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <ConnectButton.Custom>
-                    {({ openConnectModal }) => (
-                      <button
-                        onClick={openConnectModal}
-                        className="text-yellow-500 hover:text-yellow-400 hover:bg-white/10 px-2 -mx-2 text-sm"
-                      >
-                        {'>'} CONNECT WALLET
-                      </button>
-                    )}
-                  </ConnectButton.Custom>
-                </motion.div>
-              )}
-
-              {/* Command Prompt at bottom */}
+              {/* Command Prompt */}
               <div className="mt-auto pt-2 border-t border-gray-800 text-sm">
-                <span className="text-gray-500">root@cthu-os:~$</span>{' '}
+                <span className="text-gray-500">observer@cthu-os:~$</span>{' '}
                 <BlinkingCursor />
               </div>
             </div>
 
-            {/* Right Panel - Cthulhu ASCII + Terminal Logs */}
+            {/* Right Panel */}
             <div className="lg:sticky lg:top-6 lg:h-fit lg:w-80 flex flex-col">
-              {/* Cthulhu ASCII Art with Chromatic Aberration - always reserve space */}
               <div className="mb-4 flex justify-center overflow-hidden" style={{ height: '280px' }}>
-                {animationPhase >= 8 && (
+                {animationPhase >= 6 && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -1065,11 +942,11 @@ export default function HomePage() {
                 headerTitle="CTHU-OS SYSTEM"
                 staticInfo={[
                   { label: 'Version', value: '0.6.6.6' },
-                  { label: 'Network', value: 'Monad Mainnet' },
-                  { label: 'Chain ID', value: '143' },
+                  { label: 'Mode', value: 'INFO ONLY' },
+                  { label: 'Chain', value: 'Monad (143)' },
                 ]}
                 logs={systemLogs}
-                statusText="Connected to Monad"
+                statusText="Observing"
                 statusColor="green"
               />
               <button

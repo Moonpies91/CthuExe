@@ -25,16 +25,17 @@ export default function TermsPage() {
             <Link href="/" className="text-gray-600 hover:text-gray-400">{'<'} BACK TO MAIN</Link>
           </div>
 
-          <div className="text-white mb-2 text-lg">TERMS OF SERVICE</div>
+          <div className="text-white mb-2 text-lg">TERMS OF USE</div>
           <div className="text-gray-500 mb-6 text-sm">Last Updated: January 2026</div>
 
           <div className="text-gray-600 mb-6">{'-'.repeat(50)}</div>
 
-          {/* Risk Warning Box */}
-          <div className="mb-6 p-4 border border-red-800 bg-red-950/30">
-            <div className="text-red-400 font-bold mb-2">RISK WARNING</div>
-            <div className="text-red-300/80 text-sm">
-              Cryptoassets are high-risk. You may lose all money you use. This website is not authorised or regulated by the Financial Conduct Authority (FCA).
+          {/* Info Box */}
+          <div className="mb-6 p-4 border border-blue-800 bg-blue-950/30">
+            <div className="text-blue-400 font-bold mb-2">INFORMATION DISPLAY</div>
+            <div className="text-blue-300/80 text-sm">
+              This website is an information-only display. No transactions, trades, or
+              financial activities can be conducted through this interface.
             </div>
           </div>
 
@@ -44,51 +45,48 @@ export default function TermsPage() {
             <section>
               <div className="text-gray-300 font-bold mb-2">1. ABOUT THIS WEBSITE</div>
               <div className="space-y-2 text-gray-500">
-                <p>1.1 CthuCoin is an experimental decentralised exchange (DEX) operated as a hobby project by an individual developer.</p>
-                <p>1.2 This website is NOT authorised or regulated by the Financial Conduct Authority (FCA) or any other financial regulatory body.</p>
-                <p>1.3 Nothing on this website constitutes financial, legal, or tax advice.</p>
-                <p>1.4 This is experimental software. Smart contracts may contain bugs. Use at your own risk.</p>
+                <p>1.1 This website displays information about an experimental blockchain project operated as a hobby by an individual developer.</p>
+                <p>1.2 This website is an information-only display. It does not facilitate any transactions, trades, swaps, or financial activities.</p>
+                <p>1.3 The website reads and displays publicly available blockchain data.</p>
+                <p>1.4 Nothing on this website constitutes financial, legal, or investment advice.</p>
               </div>
             </section>
 
             <section>
-              <div className="text-gray-300 font-bold mb-2">2. ELIGIBILITY</div>
+              <div className="text-gray-300 font-bold mb-2">2. INFORMATION DISPLAY ONLY</div>
               <div className="space-y-2 text-gray-500">
-                <p>2.1 You must be at least 18 years old to use this website.</p>
-                <p>2.2 You must not be a resident of any jurisdiction where cryptoasset services are prohibited.</p>
-                <p>2.3 You are responsible for ensuring your use complies with all applicable laws.</p>
+                <p>2.1 This website displays blockchain data for informational purposes only.</p>
+                <p>2.2 No wallet connection is required or requested.</p>
+                <p>2.3 No transactions can be initiated through this website.</p>
+                <p>2.4 Users cannot buy, sell, trade, stake, or perform any financial transactions through this interface.</p>
               </div>
             </section>
 
             <section>
-              <div className="text-gray-300 font-bold mb-2">3. UK RESIDENTS</div>
+              <div className="text-gray-300 font-bold mb-2">3. EXPERIMENTAL PROJECT</div>
               <div className="space-y-2 text-gray-500">
-                <p>3.1 This website is not intended for residents of the United Kingdom.</p>
-                <p>3.2 The promotions on this website have not been approved by an FCA-authorised person.</p>
-                <p>3.3 UK residents use this website at their own risk and acknowledge the lack of FCA regulatory protection.</p>
+                <p>3.1 This is an experimental hobby project created for educational purposes.</p>
+                <p>3.2 The smart contracts displayed are experimental and may contain bugs.</p>
+                <p>3.3 This project is not intended for commercial use.</p>
+                <p>3.4 The developer makes no representations about the reliability or accuracy of the displayed information.</p>
               </div>
             </section>
 
             <section>
-              <div className="text-gray-300 font-bold mb-2">4. RISK ACKNOWLEDGMENT</div>
+              <div className="text-gray-300 font-bold mb-2">4. NO FINANCIAL ADVICE</div>
               <div className="space-y-2 text-gray-500">
-                <p>4.1 The value of cryptoassets can go down as well as up.</p>
-                <p>4.2 You may lose all the crypto you use.</p>
-                <p>4.3 You should not use crypto you cannot afford to lose.</p>
-                <p>4.4 Cryptoassets are not protected by the Financial Services Compensation Scheme (FSCS).</p>
-                <p>4.5 Cryptoassets are not covered by the Financial Ombudsman Service (FOS).</p>
-                <p>4.6 Past performance is not a reliable indicator of future results.</p>
-                <p>4.7 Smart contracts may contain vulnerabilities or bugs that could result in loss of funds.</p>
+                <p>4.1 Nothing on this website should be construed as financial, investment, or legal advice.</p>
+                <p>4.2 This website does not promote, recommend, or endorse any financial activities.</p>
+                <p>4.3 Any decisions you make regarding cryptocurrency are your sole responsibility.</p>
               </div>
             </section>
 
             <section>
-              <div className="text-gray-300 font-bold mb-2">5. USER RESPONSIBILITIES</div>
+              <div className="text-gray-300 font-bold mb-2">5. THIRD-PARTY BLOCKCHAIN DATA</div>
               <div className="space-y-2 text-gray-500">
-                <p>5.1 You are solely responsible for the security of your wallet and private keys.</p>
-                <p>5.2 You are responsible for any taxes arising from your use of this website.</p>
-                <p>5.3 You must conduct your own research before making any transactions.</p>
-                <p>5.4 You must not use this website for any unlawful purpose.</p>
+                <p>5.1 This website reads data from public blockchain networks.</p>
+                <p>5.2 Blockchain data is provided by third-party networks and may be delayed or inaccurate.</p>
+                <p>5.3 We are not responsible for any errors in blockchain data display.</p>
               </div>
             </section>
 
@@ -97,8 +95,7 @@ export default function TermsPage() {
               <div className="space-y-2 text-gray-500">
                 <p>6.1 This website is provided &quot;as is&quot; without any warranties of any kind.</p>
                 <p>6.2 We do not guarantee the website will be available, uninterrupted, or error-free.</p>
-                <p>6.3 We do not guarantee the accuracy of any information on this website.</p>
-                <p>6.4 We do not guarantee that smart contracts will function as intended.</p>
+                <p>6.3 We do not guarantee the accuracy of any information displayed.</p>
               </div>
             </section>
 
@@ -106,16 +103,15 @@ export default function TermsPage() {
               <div className="text-gray-300 font-bold mb-2">7. LIMITATION OF LIABILITY</div>
               <div className="space-y-2 text-gray-500">
                 <p>7.1 To the maximum extent permitted by law, we shall not be liable for any losses arising from your use of this website.</p>
-                <p>7.2 This includes loss of profits, loss of data, loss of cryptoassets, and any indirect or consequential losses.</p>
-                <p>7.3 We are not liable for any losses caused by smart contract bugs, hacks, or exploits.</p>
+                <p>7.2 This includes any reliance on information displayed on this website.</p>
               </div>
             </section>
 
             <section>
-              <div className="text-gray-300 font-bold mb-2">8. GOVERNING LAW</div>
+              <div className="text-gray-300 font-bold mb-2">8. INTELLECTUAL PROPERTY</div>
               <div className="space-y-2 text-gray-500">
-                <p>8.1 These terms shall be governed by the laws of England and Wales.</p>
-                <p>8.2 Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.</p>
+                <p>8.1 The visual design and code of this website are the property of the developer.</p>
+                <p>8.2 Smart contract code is open source and available for review.</p>
               </div>
             </section>
 
@@ -132,7 +128,7 @@ export default function TermsPage() {
           <div className="text-gray-600 my-6">{'-'.repeat(50)}</div>
 
           <div className="mt-6 pt-4 border-t border-gray-800">
-            <span className="text-gray-500">terms@cthu-os:~$</span> <BlinkingCursor />
+            <span className="text-gray-500">observer@cthu-os:~$</span> <BlinkingCursor />
           </div>
         </div>
       </div>

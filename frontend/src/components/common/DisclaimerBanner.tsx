@@ -19,55 +19,52 @@ export function DisclaimerBanner() {
   if (dismissed) return null
 
   return (
-    <div className="bg-red-950/95 border-b border-red-800 relative">
+    <div className="bg-gray-900/95 border-b border-gray-700 relative">
       <div className="max-w-6xl mx-auto px-4 py-3 pr-12">
         <div className="flex items-start gap-3">
-          <span className="text-red-500 font-mono animate-pulse mt-0.5">
-            [!]
+          <span className="text-blue-500 font-mono mt-0.5">
+            [i]
           </span>
-          <div className="text-red-300/90 font-mono text-xs space-y-2">
-            {/* FCA Required Risk Warning */}
-            <div className="font-bold text-red-400">
-              RISK WARNING: Don&apos;t invest unless you&apos;re prepared to lose all
-              the money you invest. This is a high-risk investment and you
-              should not expect to be protected if something goes wrong.
+          <div className="text-gray-300/90 font-mono text-xs space-y-2">
+            {/* Info Notice */}
+            <div className="font-bold text-blue-400">
+              INFORMATION DISPLAY: This website displays blockchain data only.
+              No transactions can be made through this interface.
             </div>
 
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-red-500 underline hover:text-red-400"
+              className="text-gray-500 underline hover:text-gray-400"
             >
-              {expanded ? 'Show less' : 'Take 2 mins to learn more'}
+              {expanded ? 'Show less' : 'Learn more'}
             </button>
 
             {expanded && (
-              <div className="space-y-2 border-t border-red-800 pt-2 mt-2">
-                <ul className="list-disc list-inside space-y-1 text-red-400/80">
-                  <li>The value of cryptoassets can go down as well as up</li>
-                  <li>You may lose all the money you invest</li>
-                  <li>You should not invest money you cannot afford to lose</li>
-                  <li>Cryptoassets are not protected by the Financial Services Compensation Scheme (FSCS)</li>
-                  <li>Cryptoassets are not covered by the Financial Ombudsman Service (FOS)</li>
-                </ul>
-
-                <div className="text-yellow-500/90 border border-yellow-700/50 bg-yellow-900/20 p-2 mt-2">
-                  <strong>UK RESIDENTS:</strong> This website is not intended for, and should not be
-                  accessed by, residents of the United Kingdom. The promotions on this website have
-                  not been approved by an FCA-authorised person.
+              <div className="space-y-2 border-t border-gray-700 pt-2 mt-2">
+                <div className="text-gray-500">
+                  This website is an information-only display for an experimental blockchain project.
+                  It reads and displays data from deployed smart contracts but does not facilitate
+                  any transactions, trades, or financial activities.
                 </div>
 
-                <div className="text-gray-500 text-xs mt-2">
+                <ul className="list-disc list-inside space-y-1 text-gray-500">
+                  <li>No wallet connection required</li>
+                  <li>No transactions possible through this site</li>
+                  <li>Information displayed is read directly from the blockchain</li>
+                  <li>This is a hobby project for educational purposes</li>
+                </ul>
+
+                <div className="text-gray-600 text-xs mt-2">
                   This website is operated by an individual developer as an experimental project.
-                  It is not authorised or regulated by the Financial Conduct Authority (FCA).
-                  No financial advice is provided.
+                  Nothing on this website constitutes financial, legal, or investment advice.
                 </div>
               </div>
             )}
 
-            {/* Existing hobby project disclaimer */}
-            <div className="text-red-400/70 border-t border-red-800/50 pt-2">
+            {/* Hobby project disclaimer */}
+            <div className="text-gray-500 border-t border-gray-700/50 pt-2">
               <strong>EXPERIMENTAL PROJECT:</strong> This is a hobby project by a solo developer
-              learning about blockchain and web3. Expect bugs and breaking changes. DYOR.
+              exploring blockchain technology. For informational purposes only.
             </div>
           </div>
         </div>
@@ -75,8 +72,8 @@ export function DisclaimerBanner() {
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-3 right-4 text-red-500 hover:text-red-300 font-mono text-sm px-2 py-1 border border-red-800 hover:border-red-600 transition-colors"
-          aria-label="Dismiss warning"
+          className="absolute top-3 right-4 text-gray-500 hover:text-gray-300 font-mono text-sm px-2 py-1 border border-gray-700 hover:border-gray-500 transition-colors"
+          aria-label="Dismiss notice"
         >
           [X]
         </button>

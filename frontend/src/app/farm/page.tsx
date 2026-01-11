@@ -9,29 +9,20 @@ import { TerminalLog } from '@/components/terminal/TerminalLog'
 import { StickyPanel } from '@/components/StickyPanel'
 import { useGlitchLevel } from '@/hooks/useGlitchLevel'
 import { useSanityMode } from '@/hooks/useSanityMode'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { parseEther, formatEther } from 'viem'
+import { useReadContract } from 'wagmi'
+import { formatEther } from 'viem'
 import { CONTRACTS } from '@/config/contracts'
 
-// ABIs
+// ABIs - Read only
 const ERC20_ABI = [
-  { name: 'approve', type: 'function', inputs: [{ name: 'spender', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ type: 'bool' }] },
   { name: 'balanceOf', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { name: 'allowance', type: 'function', inputs: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
 ] as const
 
 const FARM_ABI = [
-  { name: 'deposit', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }, { name: '_amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
-  { name: 'withdraw', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }, { name: '_amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
-  { name: 'harvest', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
-  { name: 'pendingReward', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }, { name: '_user', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { name: 'getUserInfo', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }, { name: '_user', type: 'address' }], outputs: [{ name: 'amount', type: 'uint256' }, { name: 'rewardDebt', type: 'uint256' }], stateMutability: 'view' },
   { name: 'getPoolInfo', type: 'function', inputs: [{ name: '_pid', type: 'uint256' }], outputs: [{ name: 'lpToken', type: 'address' }, { name: 'allocPoint', type: 'uint256' }, { name: 'lastRewardTime', type: 'uint256' }, { name: 'accCthuPerShare', type: 'uint256' }, { name: 'totalDeposited', type: 'uint256' }, { name: 'active', type: 'bool' }], stateMutability: 'view' },
 ] as const
 
 // Farm start time - when the farm contract started emitting rewards
-// CthuFarmV3 started on December 27, 2025 at 04:43:03 GMT
 const FARM_START_TIME = 1766810583
 
 // Emission schedule
@@ -69,58 +60,12 @@ function AsciiProgressBar({ percent, width = 20, filledChar = '█', emptyChar =
 export default function FarmPage() {
   const { madnessLevel } = useGlitchLevel()
   const { sanityMode } = useSanityMode()
-  const { isConnected, address } = useAccount()
   const [selectedPool, setSelectedPool] = useState<number | null>(null)
-  const [logs, setLogs] = useState<string[]>(['Farm module loaded.', 'Fetching pool data...'])
+  const [logs] = useState<string[]>(['Farm monitor loaded.', 'Read-only mode active.', 'Fetching on-chain data...'])
   const [currentYear, setCurrentYear] = useState(1)
-  const [stakeAmount, setStakeAmount] = useState('')
-  const [unstakeAmount, setUnstakeAmount] = useState('')
-  const [actionMode, setActionMode] = useState<'stake' | 'unstake' | null>(null)
-
-  const addLog = (msg: string) => setLogs(prev => [...prev.slice(-6), msg])
 
   const contracts = CONTRACTS.mainnet
   const FARM_ADDRESS = contracts.FARM as `0x${string}`
-
-  // Get LP token address for selected pool
-  const selectedPoolData = selectedPool !== null ? POOLS[selectedPool] : null
-  const lpTokenAddress = selectedPoolData?.lpToken as `0x${string}` | undefined
-
-  // Read: User's LP token balance
-  const { data: lpBalance, refetch: refetchLpBalance } = useReadContract({
-    address: lpTokenAddress,
-    abi: ERC20_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address] : undefined,
-    query: { enabled: !!address && !!lpTokenAddress },
-  })
-
-  // Read: LP token allowance for farm
-  const { data: lpAllowance, refetch: refetchAllowance } = useReadContract({
-    address: lpTokenAddress,
-    abi: ERC20_ABI,
-    functionName: 'allowance',
-    args: address ? [address, FARM_ADDRESS] : undefined,
-    query: { enabled: !!address && !!lpTokenAddress },
-  })
-
-  // Read: User's staked amount in selected pool
-  const { data: userInfo, refetch: refetchUserInfo } = useReadContract({
-    address: FARM_ADDRESS,
-    abi: FARM_ABI,
-    functionName: 'getUserInfo',
-    args: selectedPool !== null && address ? [BigInt(selectedPool), address] : undefined,
-    query: { enabled: selectedPool !== null && !!address },
-  })
-
-  // Read: Pending rewards for selected pool
-  const { data: pendingRewards, refetch: refetchPending } = useReadContract({
-    address: FARM_ADDRESS,
-    abi: FARM_ABI,
-    functionName: 'pendingReward',
-    args: selectedPool !== null && address ? [BigInt(selectedPool), address] : undefined,
-    query: { enabled: selectedPool !== null && !!address },
-  })
 
   // Read: Pool info (for TVL)
   const { data: poolInfo } = useReadContract({
@@ -144,133 +89,14 @@ export default function FarmPage() {
     ? TOTAL_REWARDS - Number(formatEther(farmCthuBalance as bigint))
     : 0
 
-  // Write: Approve LP tokens
-  const { writeContract: approveLp, data: approveHash, isPending: isApproving } = useWriteContract()
-  const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({ hash: approveHash })
-
-  // Write: Deposit (stake)
-  const { writeContract: deposit, data: depositHash, isPending: isDepositing } = useWriteContract()
-  const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } = useWaitForTransactionReceipt({ hash: depositHash })
-
-  // Write: Withdraw (unstake)
-  const { writeContract: withdraw, data: withdrawHash, isPending: isWithdrawing } = useWriteContract()
-  const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawSuccess } = useWaitForTransactionReceipt({ hash: withdrawHash })
-
-  // Write: Harvest rewards
-  const { writeContract: harvest, data: harvestHash, isPending: isHarvesting } = useWriteContract()
-  const { isLoading: isHarvestConfirming, isSuccess: isHarvestSuccess } = useWaitForTransactionReceipt({ hash: harvestHash })
-
   // Derived values
-  const stakedAmount = userInfo ? (userInfo as [bigint, bigint])[0] : 0n
-  const pendingCthu = pendingRewards as bigint | undefined
   const poolTvl = poolInfo ? (poolInfo as [string, bigint, bigint, bigint, bigint, boolean])[4] : 0n
-  const needsApproval = lpAllowance !== undefined && stakeAmount
-    ? (lpAllowance as bigint) < parseEther(stakeAmount || '0')
-    : false
-
-  const isLoading = isApproving || isApproveConfirming || isDepositing || isDepositConfirming ||
-                    isWithdrawing || isWithdrawConfirming || isHarvesting || isHarvestConfirming
-
-  // Effect: Handle approval success
-  useEffect(() => {
-    if (isApproveSuccess) {
-      addLog('Approval confirmed!')
-      refetchAllowance()
-    }
-  }, [isApproveSuccess, refetchAllowance])
-
-  // Effect: Handle deposit success
-  useEffect(() => {
-    if (isDepositSuccess) {
-      addLog(`Staked ${stakeAmount} LP tokens!`)
-      setStakeAmount('')
-      setActionMode(null)
-      refetchUserInfo()
-      refetchLpBalance()
-      refetchPending()
-    }
-  }, [isDepositSuccess, stakeAmount, refetchUserInfo, refetchLpBalance, refetchPending])
-
-  // Effect: Handle withdraw success
-  useEffect(() => {
-    if (isWithdrawSuccess) {
-      addLog(`Unstaked ${unstakeAmount} LP tokens!`)
-      setUnstakeAmount('')
-      setActionMode(null)
-      refetchUserInfo()
-      refetchLpBalance()
-      refetchPending()
-    }
-  }, [isWithdrawSuccess, unstakeAmount, refetchUserInfo, refetchLpBalance, refetchPending])
-
-  // Effect: Handle harvest success
-  useEffect(() => {
-    if (isHarvestSuccess) {
-      addLog('CTHU claimed!')
-      refetchPending()
-      refetchUserInfo()
-    }
-  }, [isHarvestSuccess, refetchPending, refetchUserInfo])
-
-  // Handlers
-  const handleApprove = () => {
-    if (!stakeAmount || !lpTokenAddress) return
-    addLog(`Approving ${stakeAmount} LP...`)
-    approveLp({
-      address: lpTokenAddress,
-      abi: ERC20_ABI,
-      functionName: 'approve',
-      args: [FARM_ADDRESS, parseEther(stakeAmount)],
-    })
-  }
-
-  const handleDeposit = () => {
-    if (!stakeAmount || selectedPool === null) return
-    addLog(`Staking ${stakeAmount} LP...`)
-    deposit({
-      address: FARM_ADDRESS,
-      abi: FARM_ABI,
-      functionName: 'deposit',
-      args: [BigInt(selectedPool), parseEther(stakeAmount)],
-    })
-  }
-
-  const handleWithdraw = () => {
-    if (!unstakeAmount || selectedPool === null) return
-    addLog(`Unstaking ${unstakeAmount} LP...`)
-    withdraw({
-      address: FARM_ADDRESS,
-      abi: FARM_ABI,
-      functionName: 'withdraw',
-      args: [BigInt(selectedPool), parseEther(unstakeAmount)],
-    })
-  }
-
-  const handleHarvest = () => {
-    if (selectedPool === null) return
-    addLog('Claiming CTHU...')
-    harvest({
-      address: FARM_ADDRESS,
-      abi: FARM_ABI,
-      functionName: 'harvest',
-      args: [BigInt(selectedPool)],
-    })
-  }
-
-  // Refresh pending rewards periodically
-  useEffect(() => {
-    if (selectedPool === null || !address) return
-    const interval = setInterval(() => {
-      refetchPending()
-    }, 10000) // Every 10 seconds
-    return () => clearInterval(interval)
-  }, [selectedPool, address, refetchPending])
 
   // Refresh farm balance periodically (for accurate "CTHU farmed" display)
   useEffect(() => {
     const interval = setInterval(() => {
       refetchFarmBalance()
-    }, 5000) // Every 5 seconds for more real-time feel
+    }, 5000)
     return () => clearInterval(interval)
   }, [refetchFarmBalance])
 
@@ -295,7 +121,7 @@ export default function FarmPage() {
     }
 
     calculateCurrentYear()
-    const interval = setInterval(calculateCurrentYear, 60000) // Check every minute
+    const interval = setInterval(calculateCurrentYear, 60000)
     return () => clearInterval(interval)
   }, [])
 
@@ -315,7 +141,8 @@ export default function FarmPage() {
               <Link href="/" className="text-gray-600 hover:text-emerald-600">{'<'} BACK TO MAIN</Link>
             </div>
 
-            <div className="text-emerald-600 mb-4">ELDRITCH FARMS - STAKING MODULE</div>
+            <div className="text-emerald-600 mb-2">ELDRITCH FARMS - STATUS MONITOR</div>
+            <div className="text-gray-600 text-xs mb-4">[READ-ONLY VIEW]</div>
 
             {/* Real-time Emission Counter */}
             <div className="mb-4 p-3 border border-emerald-900/50 bg-emerald-950/20">
@@ -345,28 +172,18 @@ export default function FarmPage() {
               </div>
             </div>
 
-            {/* Farm Stats */}
-            <div className="text-gray-500 mb-4 space-y-0.5 text-sm">
-              <div>Total Value Locked: $---,---</div>
-              <div>Current Emission:   {EMISSIONS[currentYear - 1]?.rate || 0} CTHU/sec (Year {currentYear})</div>
-              <div>Your Total Staked:  $0.00</div>
-              <div>Pending CTHU:       0.00 CTHU</div>
-            </div>
-
             <div className="text-gray-600 mb-4">{'-'.repeat(40)}</div>
 
             {/* Emission Schedule with Progress */}
             <div className="text-gray-400 mb-2">EMISSION SCHEDULE:</div>
             <div className="text-gray-600 text-sm mb-4 space-y-2">
               {(() => {
-                // Calculate how much has been farmed per year based on actual total
                 let remainingFarmed = actualFarmedCthu
 
                 return EMISSIONS.map((emission) => {
                   const isCurrent = currentYear === emission.year
                   const isPast = currentYear > emission.year
 
-                  // Calculate this year's farmed amount
                   let yearFarmed = 0
                   let yearRemaining = emission.total
 
@@ -409,10 +226,9 @@ export default function FarmPage() {
             <div className="text-gray-600 mb-4">{'-'.repeat(40)}</div>
 
             {/* Pool List */}
-            <div className="text-gray-400 mb-2">AVAILABLE POOLS:</div>
+            <div className="text-gray-400 mb-2">POOL STATUS:</div>
             <div className="mb-4 space-y-2">
               {POOLS.map((pool) => {
-                // Calculate pool's share based on actual farmed CTHU
                 const poolFarmed = actualFarmedCthu * (pool.weight / 100)
                 const poolTotal = TOTAL_REWARDS * (pool.weight / 100)
                 const poolProgress = (poolFarmed / poolTotal) * 100
@@ -421,10 +237,7 @@ export default function FarmPage() {
                 return (
                   <div key={pool.id} className="space-y-0.5">
                     <button
-                      onClick={() => {
-                        setSelectedPool(selectedPool === pool.id ? null : pool.id)
-                        addLog(`Selected pool: ${pool.name}`)
-                      }}
+                      onClick={() => setSelectedPool(selectedPool === pool.id ? null : pool.id)}
                       className={`w-full text-left hover:bg-white/10 px-2 -mx-2 ${
                         selectedPool === pool.id ? 'text-white bg-white/10' : 'text-gray-400'
                       }`}
@@ -442,7 +255,7 @@ export default function FarmPage() {
               })}
             </div>
 
-            {/* Selected Pool Details */}
+            {/* Selected Pool Details - Read Only */}
             {selectedPool !== null && (() => {
               const pool = POOLS[selectedPool]
               const poolFarmed = actualFarmedCthu * (pool.weight / 100)
@@ -450,11 +263,6 @@ export default function FarmPage() {
               const poolRemaining = poolTotal - poolFarmed
               const poolProgress = (poolFarmed / poolTotal) * 100
               const currentRate = (EMISSIONS[currentYear - 1]?.rate || 0) * (pool.weight / 100)
-
-              // Format user data
-              const userLpBalance = lpBalance ? formatEther(lpBalance as bigint) : '0'
-              const userStaked = stakedAmount ? formatEther(stakedAmount) : '0'
-              const userPending = pendingCthu ? formatEther(pendingCthu) : '0'
               const tvlFormatted = poolTvl ? formatEther(poolTvl) : '0'
 
               return (
@@ -463,9 +271,6 @@ export default function FarmPage() {
                 <div className="text-gray-400 mb-2">POOL {selectedPool} - {pool.name}:</div>
                 <div className="text-gray-500 text-xs mb-4 space-y-0.5">
                   <div>  TVL:           {parseFloat(tvlFormatted).toLocaleString(undefined, { maximumFractionDigits: 4 })} LP</div>
-                  <div>  Your LP:       {parseFloat(userLpBalance).toLocaleString(undefined, { maximumFractionDigits: 6 })}</div>
-                  <div className="text-emerald-500">  Staked:        {parseFloat(userStaked).toLocaleString(undefined, { maximumFractionDigits: 6 })} LP</div>
-                  <div className="text-cyan-500">  Pending:       {parseFloat(userPending).toLocaleString(undefined, { maximumFractionDigits: 4 })} CTHU</div>
                   <div className="text-gray-600 mt-2">{'-'.repeat(30)}</div>
                   <div className="text-emerald-600">  Pool Allocation: {poolTotal.toLocaleString()} CTHU ({pool.weight}%)</div>
                   <div className="text-emerald-700">  Farmed:     {poolFarmed.toLocaleString(undefined, { maximumFractionDigits: 2 })} CTHU</div>
@@ -477,148 +282,16 @@ export default function FarmPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
-                {!isConnected ? (
-                  <ConnectButton.Custom>
-                    {({ openConnectModal }) => (
-                      <button onClick={openConnectModal} className="text-yellow-500 hover:text-yellow-400">
-                        {'>'} CONNECT WALLET
-                      </button>
-                    )}
-                  </ConnectButton.Custom>
-                ) : (
-                  <div className="space-y-2">
-                    {/* Stake Section */}
-                    {actionMode === 'stake' ? (
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">AMOUNT:</span>
-                          <input
-                            type="number"
-                            value={stakeAmount}
-                            onChange={(e) => setStakeAmount(e.target.value)}
-                            placeholder="0.00"
-                            className="bg-black border-b border-gray-700 px-2 py-0.5 text-white w-32 focus:border-emerald-500 focus:outline-none text-sm"
-                            disabled={isLoading}
-                          />
-                          <span className="text-gray-600 text-xs">LP</span>
-                          {lpBalance !== undefined && (lpBalance as bigint) > 0n && (
-                            <button
-                              onClick={() => setStakeAmount(formatEther(lpBalance as bigint))}
-                              className="text-gray-600 text-xs hover:text-white"
-                            >
-                              [MAX]
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          {needsApproval ? (
-                            <button
-                              onClick={handleApprove}
-                              disabled={isLoading || !stakeAmount}
-                              className="text-yellow-500 hover:text-yellow-400 disabled:text-gray-600"
-                            >
-                              {'>'} {isApproving || isApproveConfirming ? 'APPROVING...' : 'APPROVE'}
-                            </button>
-                          ) : (
-                            <button
-                              onClick={handleDeposit}
-                              disabled={isLoading || !stakeAmount || parseFloat(stakeAmount) <= 0}
-                              className="text-green-500 hover:text-green-400 disabled:text-gray-600"
-                            >
-                              {'>'} {isDepositing || isDepositConfirming ? 'STAKING...' : 'CONFIRM STAKE'}
-                            </button>
-                          )}
-                          <button
-                            onClick={() => { setActionMode(null); setStakeAmount('') }}
-                            className="text-gray-500 hover:text-gray-400"
-                            disabled={isLoading}
-                          >
-                            [CANCEL]
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setActionMode('stake')}
-                        className="text-green-500 hover:text-green-400 block"
-                        disabled={isLoading}
-                      >
-                        {'>'} STAKE LP
-                      </button>
-                    )}
-
-                    {/* Unstake Section */}
-                    {actionMode === 'unstake' ? (
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">AMOUNT:</span>
-                          <input
-                            type="number"
-                            value={unstakeAmount}
-                            onChange={(e) => setUnstakeAmount(e.target.value)}
-                            placeholder="0.00"
-                            className="bg-black border-b border-gray-700 px-2 py-0.5 text-white w-32 focus:border-yellow-500 focus:outline-none text-sm"
-                            disabled={isLoading}
-                          />
-                          <span className="text-gray-600 text-xs">LP</span>
-                          {stakedAmount > 0n && (
-                            <button
-                              onClick={() => setUnstakeAmount(formatEther(stakedAmount))}
-                              className="text-gray-600 text-xs hover:text-white"
-                            >
-                              [MAX]
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={handleWithdraw}
-                            disabled={isLoading || !unstakeAmount || parseFloat(unstakeAmount) <= 0}
-                            className="text-yellow-500 hover:text-yellow-400 disabled:text-gray-600"
-                          >
-                            {'>'} {isWithdrawing || isWithdrawConfirming ? 'UNSTAKING...' : 'CONFIRM UNSTAKE'}
-                          </button>
-                          <button
-                            onClick={() => { setActionMode(null); setUnstakeAmount('') }}
-                            className="text-gray-500 hover:text-gray-400"
-                            disabled={isLoading}
-                          >
-                            [CANCEL]
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setActionMode('unstake')}
-                        className="text-yellow-500 hover:text-yellow-400 block"
-                        disabled={isLoading || stakedAmount === 0n}
-                      >
-                        {'>'} UNSTAKE LP
-                      </button>
-                    )}
-
-                    {/* Harvest Button */}
-                    <button
-                      onClick={handleHarvest}
-                      disabled={isLoading || !pendingCthu || pendingCthu === 0n}
-                      className="text-cyan-500 hover:text-cyan-400 block disabled:text-gray-600"
-                    >
-                      {'>'} {isHarvesting || isHarvestConfirming ? 'CLAIMING...' : 'CLAIM CTHU'}
-                      {pendingCthu && pendingCthu > 0n && (
-                        <span className="text-cyan-700 ml-2">
-                          ({parseFloat(formatEther(pendingCthu)).toFixed(2)} CTHU)
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                )}
+                {/* Info notice instead of actions */}
+                <div className="text-gray-600 text-xs p-2 border border-gray-800">
+                  This is a read-only status display. Contract interactions are not available through this interface.
+                </div>
               </>
             )})()}
 
             {/* Prompt */}
             <div className="mt-auto pt-4 border-t border-gray-800">
-              <span className="text-gray-500">farm@cthu-os:~$</span> <BlinkingCursor />
+              <span className="text-gray-500">monitor@cthu-os:~$</span> <BlinkingCursor />
             </div>
           </div>
 
@@ -626,15 +299,15 @@ export default function FarmPage() {
           <div className="hidden lg:block">
             <StickyPanel topOffset={24}>
               <TerminalLog
-                title="farm.log"
+                title="monitor.log"
                 headerColor="text-emerald-600"
-                headerTitle="FARM STATUS"
+                headerTitle="FARM MONITOR"
                 staticInfo={[
+                  { label: 'Mode', value: 'READ-ONLY' },
                   { label: 'Contract', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
-                  { label: 'Alloc Points', value: '10000' },
                 ]}
                 logs={logs}
-                statusText="Connected to Monad"
+                statusText="Monitoring"
                 statusColor="green"
               />
             </StickyPanel>
@@ -642,15 +315,15 @@ export default function FarmPage() {
           {/* Mobile version */}
           <div className="lg:hidden">
             <TerminalLog
-              title="farm.log"
+              title="monitor.log"
               headerColor="text-emerald-600"
-              headerTitle="FARM STATUS"
+              headerTitle="FARM MONITOR"
               staticInfo={[
+                { label: 'Mode', value: 'READ-ONLY' },
                 { label: 'Contract', value: `${FARM_ADDRESS.slice(0, 10)}...${FARM_ADDRESS.slice(-8)}` },
-                { label: 'Alloc Points', value: '10000' },
               ]}
               logs={logs}
-              statusText="Connected to Monad"
+              statusText="Monitoring"
               statusColor="green"
             />
           </div>
