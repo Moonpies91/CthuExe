@@ -11,9 +11,6 @@ import { TerminalLog } from '@/components/terminal/TerminalLog'
 import { useBootSequence } from '@/hooks/useBootSequence'
 import { useGlitchLevel } from '@/hooks/useGlitchLevel'
 import { useSanityMode } from '@/hooks/useSanityMode'
-import { useReadContract } from 'wagmi'
-import { formatEther } from 'viem'
-import { CONTRACTS, BURN_ADDRESS } from '@/config/contracts'
 
 // Eldritch glitch characters and runes
 const GLITCH_CHARS = '▓░▒█▀▄╔╗╚╝║═╬▲▼◄►◊○●□■△▽'
@@ -151,17 +148,6 @@ function EldritchGlitchOverlay({ active, intensity = 1 }: { active: boolean, int
     </>
   )
 }
-
-// ABIs for reading contract data
-const ERC20_ABI = [
-  { name: 'balanceOf', type: 'function', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-  { name: 'totalSupply', type: 'function', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
-] as const
-
-const PAIR_ABI = [
-  { name: 'getReserves', type: 'function', inputs: [], outputs: [{ name: 'reserve0', type: 'uint112' }, { name: 'reserve1', type: 'uint112' }, { name: 'blockTimestampLast', type: 'uint32' }], stateMutability: 'view' },
-  { name: 'token0', type: 'function', inputs: [], outputs: [{ type: 'address' }], stateMutability: 'view' },
-] as const
 
 // Cthulhu ASCII Art
 const CTHULHU_ASCII = `                                ===~=:
@@ -698,42 +684,6 @@ export default function HomePage() {
     }
   }, [])
 
-  // Read burned CTHU balance
-  const { data: burnedBalance } = useReadContract({
-    address: CONTRACTS.mainnet.CTHUCOIN as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: 'balanceOf',
-    args: [BURN_ADDRESS as `0x${string}`],
-  })
-
-  // Read CTHU/MONAD pair reserves for TVL
-  const { data: pairReserves } = useReadContract({
-    address: CONTRACTS.mainnet.CTHU_MONAD_PAIR as `0x${string}`,
-    abi: PAIR_ABI,
-    functionName: 'getReserves',
-  })
-
-  const { data: token0 } = useReadContract({
-    address: CONTRACTS.mainnet.CTHU_MONAD_PAIR as `0x${string}`,
-    abi: PAIR_ABI,
-    functionName: 'token0',
-  })
-
-  const burnedAmount = burnedBalance
-    ? Number(formatEther(burnedBalance)).toLocaleString(undefined, { maximumFractionDigits: 0 })
-    : '---,---'
-
-  const tvlInMonad = (() => {
-    if (!pairReserves || !token0) return null
-    const isCthuToken0 = token0.toLowerCase() === CONTRACTS.mainnet.CTHUCOIN.toLowerCase()
-    const monadReserve = isCthuToken0 ? pairReserves[1] : pairReserves[0]
-    return Number(formatEther(monadReserve)) * 2
-  })()
-
-  const tvlDisplay = tvlInMonad
-    ? `${tvlInMonad.toLocaleString(undefined, { maximumFractionDigits: 0 })} MON`
-    : '$---,---'
-
   useEffect(() => {
     if (showBoot || !bootLoaded || !sanityLoaded || hasPlayedAnimation === null) return
     if (hasPlayedAnimation) return
@@ -878,42 +828,6 @@ export default function HomePage() {
                   />
                 )}
               </div>
-
-              {/* Stats */}
-              {animationPhase >= 9 && (
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <div className="text-gray-700 text-xs mb-3">{'-'.repeat(50)}</div>
-                  <div className="mb-3 p-3 border border-emerald-900/50 bg-emerald-950/20 relative overflow-hidden">
-                    <div className="absolute inset-0 pointer-events-none opacity-10">
-                      <div className="h-full w-full" style={{
-                        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px)'
-                      }} />
-                    </div>
-
-                    <div className="space-y-2 relative z-10">
-                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm font-mono">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">TVL:</span>
-                          <span className="text-emerald-400 font-bold">{tvlDisplay}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">BURNED:</span>
-                          <span className="text-orange-400 font-bold">{burnedAmount}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">SUPPLY:</span>
-                          <span className="text-cyan-400 font-bold">1B CTHU</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-mono">
-                        <span className="text-gray-500">FARM ALLOCATION:</span>
-                        <span className="text-yellow-400 font-bold">885M CTHU</span>
-                        <span className="text-gray-600">(4 years)</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Command Prompt */}
               <div className="mt-auto pt-2 border-t border-gray-800 text-sm">
