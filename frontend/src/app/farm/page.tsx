@@ -100,6 +100,15 @@ export default function VoidPage() {
 
             <div className="text-gray-600 mb-4">{'-'.repeat(40)}</div>
 
+            {/* Lore section */}
+            <div className="mb-6 p-4 border border-gray-800 bg-gray-950/30">
+              <div className="text-purple-400 text-xs mb-2">◈ TRANSMISSION ◈</div>
+              <div className="text-gray-500 text-xs space-y-2 leading-relaxed">
+                <p>In the sunken city of R'lyeh, dead Cthulhu waits dreaming. The void is not empty — it breathes, it watches, it remembers.</p>
+                <p className="text-gray-600">Those who gaze into the abyss find that the abyss gazes also into them. The boundaries between dimensions grow thin here.</p>
+              </div>
+            </div>
+
             {/* Cryptic display */}
             <div className="mb-6 p-4 border border-purple-900/50 bg-purple-950/20">
               <div className="text-purple-400 text-xs mb-3">VOID RESONANCE</div>
@@ -131,6 +140,26 @@ export default function VoidPage() {
                 <div className="text-gray-600 text-xs">
                   ᛉᚨᛚᚷᛟ ᚲᛟᛗᛖᛊ • ᚦᛖ ᛞᚱᛖᚨᛗᛖᚱ ᚨᚹᚨᛁᛏᛊ
                 </div>
+              </div>
+            </div>
+
+            {/* Ancient wisdom */}
+            <div className="mb-6 p-4 border border-purple-900/30 bg-purple-950/10">
+              <div className="text-purple-500 text-xs mb-2">◈ WHISPERS FROM BEYOND ◈</div>
+              <div className="text-gray-600 text-xs space-y-3 leading-relaxed">
+                <p className="text-gray-500">"That is not dead which can eternal lie, and with strange aeons even death may die."</p>
+                <p>The Great Old Ones ruled the earth aeons before the rise of man. When the stars are right, they shall return. Until then, they sleep — but they dream.</p>
+                <p className="text-purple-700">The cult awaits. The cycle continues. IA! IA!</p>
+              </div>
+            </div>
+
+            {/* Eldritch symbols */}
+            <div className="mb-6 text-center">
+              <div className="text-purple-600/50 text-2xl tracking-widest">
+                ◊ ⍟ ◈ ⌬ ◊
+              </div>
+              <div className="text-gray-700 text-xs mt-2">
+                The stars align. The void deepens.
               </div>
             </div>
 
