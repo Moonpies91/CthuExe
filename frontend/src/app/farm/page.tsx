@@ -140,12 +140,12 @@ export default function VoidPage() {
                 </div>
               </div>
 
-              <FullWidthProgressBar percent={(consumed / TOTAL_ESSENCE) * 100} />
+              <FullWidthProgressBar percent={(remaining / TOTAL_ESSENCE) * 100} />
               <div className="text-center mt-4">
                 <div className="text-purple-400 text-2xl font-bold tabular-nums">
-                  {((consumed / TOTAL_ESSENCE) * 100).toFixed(6)}%
+                  {((remaining / TOTAL_ESSENCE) * 100).toFixed(6)}%
                 </div>
-                <div className="text-gray-600 text-xs mt-1">◈ ᚦᛖ ᚲᛃᚲᛚᛖ ᚲᛟᚾᛏᛁᚾᚢᛖᛊ ◈</div>
+                <div className="text-gray-600 text-xs mt-1">◈ ᚱᛖᛗᚨᛁᚾᛊ ᛁᚾ ᚦᛖ ᚡᛟᛁᛞ ◈</div>
               </div>
             </div>
 
