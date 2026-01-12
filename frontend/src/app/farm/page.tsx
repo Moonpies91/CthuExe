@@ -28,21 +28,24 @@ function generateRunes(length: number): string {
 }
 
 function FullWidthProgressBar({ percent }: { percent: number }) {
-  const totalChars = 60
-  const filledChars = Math.floor((percent / 100) * totalChars)
-  const emptyChars = totalChars - filledChars
   return (
     <div className="w-full h-8 bg-gray-900 border border-purple-900/50 relative overflow-hidden">
+      {/* Filled portion */}
       <div
-        className="h-full bg-purple-600/40 transition-all duration-500"
+        className="absolute inset-y-0 left-0 bg-purple-600/50 flex items-center justify-center overflow-hidden transition-all duration-500"
         style={{ width: `${percent}%` }}
-      />
-      <div className="absolute inset-0 flex items-center px-2">
-        <span className="text-purple-400 text-sm font-mono tracking-tight">
-          {'█'.repeat(filledChars)}
+      >
+        <span className="text-purple-300 text-xs font-mono whitespace-nowrap">
+          {'█'.repeat(100)}
         </span>
-        <span className="text-purple-900 text-sm font-mono tracking-tight">
-          {'░'.repeat(emptyChars)}
+      </div>
+      {/* Empty portion */}
+      <div
+        className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden"
+        style={{ width: `${100 - percent}%` }}
+      >
+        <span className="text-purple-900/50 text-xs font-mono whitespace-nowrap">
+          {'░'.repeat(100)}
         </span>
       </div>
     </div>
