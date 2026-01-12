@@ -27,13 +27,19 @@ function generateRunes(length: number): string {
   return Array.from({ length }, () => RUNES[Math.floor(Math.random() * RUNES.length)]).join('')
 }
 
-function AsciiProgressBar({ percent, width = 20 }: { percent: number; width?: number }) {
-  const filled = Math.floor((percent / 100) * width)
-  const empty = width - filled
+function FullWidthProgressBar({ percent }: { percent: number }) {
   return (
-    <span className="font-mono text-purple-600">
-      [{'█'.repeat(filled)}{'░'.repeat(empty)}]
-    </span>
+    <div className="w-full h-6 bg-gray-900 border border-purple-900/50 relative overflow-hidden">
+      <div
+        className="h-full bg-purple-600/60 transition-all duration-500"
+        style={{ width: `${percent}%` }}
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-purple-300 text-xs font-mono">
+          {'█'.repeat(Math.floor(percent / 2.5))}{'░'.repeat(40 - Math.floor(percent / 2.5))}
+        </span>
+      </div>
+    </div>
   )
 }
 
@@ -128,9 +134,12 @@ export default function VoidPage() {
                 </div>
               </div>
 
-              <AsciiProgressBar percent={(consumed / TOTAL_ESSENCE) * 100} width={40} />
-              <div className="text-gray-600 text-xs mt-2">
-                {((consumed / TOTAL_ESSENCE) * 100).toFixed(6)}% ◈ ᚦᛖ ᚲᛃᚲᛚᛖ ᚲᛟᚾᛏᛁᚾᚢᛖᛊ
+              <FullWidthProgressBar percent={(consumed / TOTAL_ESSENCE) * 100} />
+              <div className="text-center mt-4">
+                <div className="text-purple-400 text-2xl font-bold tabular-nums">
+                  {((consumed / TOTAL_ESSENCE) * 100).toFixed(6)}%
+                </div>
+                <div className="text-gray-600 text-xs mt-1">◈ ᚦᛖ ᚲᛃᚲᛚᛖ ᚲᛟᚾᛏᛁᚾᚢᛖᛊ ◈</div>
               </div>
             </div>
 
