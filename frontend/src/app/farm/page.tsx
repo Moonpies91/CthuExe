@@ -111,23 +111,44 @@ export default function VoidPage() {
 
             {/* Cryptic display */}
             <div className="mb-6 p-4 border border-purple-900/50 bg-purple-950/20">
-              <div className="text-purple-400 text-xs mb-3">VOID RESONANCE</div>
+              <div className="text-purple-400 text-xs mb-4">VOID RESONANCE</div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">{runes[0]}</span>
-                  <span className="text-purple-400 font-bold">
+              <div className="grid grid-cols-2 gap-6 mb-4">
+                <div>
+                  <div className="text-gray-600 text-xs mb-1">{runes[0]}</div>
+                  <div className="text-purple-400 text-3xl font-bold tabular-nums">
                     {consumed.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </span>
+                  </div>
                 </div>
-
-                <AsciiProgressBar percent={(consumed / TOTAL_ESSENCE) * 100} width={35} />
-
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">{runes[1]}</span>
-                  <span className="text-gray-500">
+                <div className="text-right">
+                  <div className="text-gray-600 text-xs mb-1">{runes[1]}</div>
+                  <div className="text-purple-300 text-3xl font-bold tabular-nums">
                     {remaining.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                  </span>
+                  </div>
+                </div>
+              </div>
+
+              <AsciiProgressBar percent={(consumed / TOTAL_ESSENCE) * 100} width={40} />
+              <div className="text-gray-600 text-xs mt-2">
+                {((consumed / TOTAL_ESSENCE) * 100).toFixed(6)}% ◈ ᚦᛖ ᚲᛃᚲᛚᛖ ᚲᛟᚾᛏᛁᚾᚢᛖᛊ
+              </div>
+            </div>
+
+            {/* Secondary metrics */}
+            <div className="mb-6 p-4 border border-gray-800 bg-gray-950/50">
+              <div className="text-gray-500 text-xs mb-3">ESSENCE FLOW</div>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-purple-500 text-xl font-bold">{TOTAL_ESSENCE.toLocaleString()}</div>
+                  <div className="text-gray-700 text-xs">ᛏᛟᛏᚨᛚ</div>
+                </div>
+                <div>
+                  <div className="text-purple-400 text-xl font-bold">{consumed.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                  <div className="text-gray-700 text-xs">ᚲᛟᚾᛊᚢᛗᛖᛞ</div>
+                </div>
+                <div>
+                  <div className="text-purple-300 text-xl font-bold">{remaining.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                  <div className="text-gray-700 text-xs">ᚨᚹᚨᛁᛏᛁᚾᚷ</div>
                 </div>
               </div>
             </div>
